@@ -4,7 +4,9 @@ include("classes/Question.php");
 include("classes/QuestionText.php");
 include("classes/Questionnaire.php");
 $q = new Questionnaire("Dotazník 1", "Kategorie", 2018);
-
+if($q->isPosted()) {
+    $q->validateForm();
+}
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -14,5 +16,7 @@ $q = new Questionnaire("Dotazník 1", "Kategorie", 2018);
     <title>Your Website</title>
 </head>
 <body>
+    <form method="post">
     <?= $q->render(); ?>
+    </form>
 </body>

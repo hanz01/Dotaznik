@@ -12,6 +12,8 @@ class Questionnaire
     private $category;
     private $year;
 
+    private $posted;
+
     private $questions;
 
     public function __construct($header, $category, $year)
@@ -19,31 +21,54 @@ class Questionnaire
         $this->header = $header;
         $this->category = $category;
         $this->year = $year;
+        $this->posted = isset($_POST['form-name']) && $_POST['form-name'] == $this->header;
         $this->initQuestions();
 
     }
 
+    public function isPosted() {
+        return $this->posted;
+    }
+
     private function initQuestions() {
         for($i=1; $i<10; $i++) {
-            $q = new QuestionText("Text otázky" . $i);
+            $q = new QuestionText("Text otázky " . $i, "text".$i, null);
             $this->questions[] = $q;
         }
     }
 
-    public function renderTop() {
+    private function renderTop() {
         $hb= new HtmlBuilder();
-        $hb->openElement("h1");
-        $hb->addValue($this->header);
-        $hb->closeElement();
+        $hb->addElemnet("input", array("type" => "hidden", "name" => "form-name", "value" => $this->header));
+        return $hb->render();
+    }
+
+    private function renderBottom() {
+        $hb = new HtmlBuilder();
+        $hb->addElemnet("input", array("type" => "submit", "value" => "Odeslat dotazník"));
         return $hb->render();
     }
 
     public function render() {
         $top = $this->renderTop();
+        $bottom = $this->renderBottom();
         $output = "";
         for($i=0; $i<count($this->questions); $i++) {
-          $output .= $this->questions[$i]->renderFront();
+          $output .= $this->questions[$i]->render();
         }
-        return $top . $output;
+        return $top . $output . $bottom;
+    }
+
+    public function validateForm() {
+        $valid = true;
+        foreach($this->questions as $k => $v) {
+            $name = $this->questions[$k]->getName();
+            $this->questions[$k]->setValue($_POST[$name]);
+            if(!$this->questions[$k]->validate()) {
+                $this->questions[$k]->setValid(false);
+                $valid = false;
+            }
+
+        }
     }
 }
