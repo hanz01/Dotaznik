@@ -31,10 +31,9 @@ class Questionnaire
     }
 
     private function initQuestions() {
-        for($i=1; $i<3; $i++) {
-            $q = new QuestionText("Text otázky " . $i, "text" . $i, true);
-            $this->questions[] = $q;
-        }
+
+        $this->questions[] = new QuestionText("Text otázky ", "text", true);
+        $this->questions[] = new QuestionTextLong("Text otázky ", "text2", true);
         $this->questions[] = new QuestionSelect("Otázka s možností výběru", "vyb-1", 2);
         $this->questions[] = new QuestionSelect("Otázka s možností výběru jedné odpovědi", "vyb-2", 1);
         $this->questions[] = new QuestionSelectNumber("Otázka s možností výběru jedné odpovědi", "vyb-3", 1, 5);
@@ -95,8 +94,18 @@ class Questionnaire
                     $this->questions[$k]->setMessage("Vyberte aspoň jednu možnost.");
                     $valid = false;
                 }
-
             }
         }
+        if($valid) {
+            $this->getData();
+        }
+    }
+
+    private function getData() {
+        $data = "";
+        foreach ($this->questions as $item) {
+            $data .= $item->getName() . " " .  $item->getData() . "<br />";
+        }
+        echo $data;
     }
 }

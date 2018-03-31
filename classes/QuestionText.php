@@ -10,7 +10,7 @@ class QuestionText extends Question
 {
     const PLACEHOLDER = "Zadejte odpověď";
 
-    private $value;
+    protected $value;
 
     public function __construct($qustion, $name, $reqired = true, $value = null)
     {
@@ -19,6 +19,9 @@ class QuestionText extends Question
 
     public function setValue($value) {
         $this->value = $value;
+    }
+    public function getData() {
+        return $this->value;
     }
 
 

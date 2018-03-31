@@ -42,7 +42,10 @@ class QuestionSelect extends  Question
         $this->posted = $posted;
     }
     public function getData() {
-        return implode(";", array_keys ($this->posted));
+        if($this->max > 1)
+            return implode(";", array_keys ($this->posted));
+        else
+            return $this->posted;
     }
 
     public function render()

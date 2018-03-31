@@ -2,6 +2,8 @@
 include("classes/HtmlBuilder.php");
 include("classes/Question.php");
 include("classes/QuestionText.php");
+include("classes/QuestionTextLong.php");
+
 include("classes/QuestionSelect.php");
 include("classes/QuestionSelectNumber.php");
 
