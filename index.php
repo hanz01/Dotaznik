@@ -3,6 +3,7 @@ include("classes/HtmlBuilder.php");
 include("classes/Question.php");
 include("classes/QuestionText.php");
 include("classes/QuestionSelect.php");
+include("classes/QuestionSelectNumber.php");
 
 include("classes/Questionnaire.php");
 $q = new Questionnaire("Dotazník 1", "Kategorie", 2018);

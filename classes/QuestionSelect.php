@@ -10,11 +10,11 @@ class QuestionSelect extends  Question
 {
     private $max;
 
-    private $oppnions = array();
+    protected $oppnions = array();
 
-    private $posted = array();
+    protected $posted = array();
 
-    private $message;
+    protected $message;
 
     public function __construct($qustion, $name, $max, $rqired = true)
     {
@@ -23,6 +23,11 @@ class QuestionSelect extends  Question
         $this->initOppnions();
     }
 
+    public function __construct1($qustion, $name, $max, $rqired = true)
+    {
+        parent::__construct($qustion, $name, $rqired);
+        $this->max = $max;
+    }
     private function initOppnions() {
         for($i=0; $i<=5; $i++) {
             $this->oppnions['op-'.$i] = "Možnost " . $i;
@@ -49,9 +54,7 @@ class QuestionSelect extends  Question
         if($this->max > 1)
             $type = "checkbox";
         foreach($this->oppnions as $k => $v) {
-            $hb->openElement("label", array("for" => $k));
-            $hb->addValue($v);
-            $hb->closeElement();
+
             if($this->max > 1)
                 $name = $this->name . "[op".$i."]";
             else
@@ -69,6 +72,9 @@ class QuestionSelect extends  Question
                 $args["checked"] = "checked";
             }
             $hb->addElemnet("input", $args);
+            $hb->openElement("label", array("for" => $k));
+            $hb->addValue($v);
+            $hb->closeElement();
             $hb->addElemnet("br");
             $i++;
         }

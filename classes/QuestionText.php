@@ -27,7 +27,7 @@ class QuestionText extends Question
     {
         $params = array("name" => $this->name,  "placeholder" => self::PLACEHOLDER);
         if($this->reqired)
-            $params["rrequired"] = "required";
+            $params["required"] = "required";
         if(!$this->valid)
             $params["style"] = "background: red";
         if($this->value != null)

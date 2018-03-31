@@ -37,6 +37,7 @@ class Questionnaire
         }
         $this->questions[] = new QuestionSelect("Otázka s možností výběru", "vyb-1", 2);
         $this->questions[] = new QuestionSelect("Otázka s možností výběru jedné odpovědi", "vyb-2", 1);
+        $this->questions[] = new QuestionSelectNumber("Otázka s možností výběru jedné odpovědi", "vyb-3", 1, 5);
 
     }
 

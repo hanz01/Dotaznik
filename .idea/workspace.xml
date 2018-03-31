@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bc78e34d-d87a-418b-bd00-3b63318a81ea" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/classes/QuestionSelect.php" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/classes/QuestionSelectNumber.php" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/classes/Question.php" afterPath="$PROJECT_DIR$/classes/Question.php" />
+      <change beforePath="$PROJECT_DIR$/classes/QuestionSelect.php" afterPath="$PROJECT_DIR$/classes/QuestionSelect.php" />
       <change beforePath="$PROJECT_DIR$/classes/QuestionText.php" afterPath="$PROJECT_DIR$/classes/QuestionText.php" />
       <change beforePath="$PROJECT_DIR$/classes/Questionnaire.php" afterPath="$PROJECT_DIR$/classes/Questionnaire.php" />
       <change beforePath="$PROJECT_DIR$/index.php" afterPath="$PROJECT_DIR$/index.php" />
@@ -31,28 +31,48 @@
       <file leaf-file-name="QuestionText.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/classes/QuestionText.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+            <state relative-caret-position="159">
+              <caret line="29" column="21" lean-forward="true" selection-start-line="29" selection-start-column="21" selection-end-line="29" selection-end-column="21" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Questionnaire.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Questionnaire.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/classes/Questionnaire.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="193">
-              <caret line="34" column="71" lean-forward="false" selection-start-line="34" selection-start-column="71" selection-end-line="34" selection-end-column="71" />
+            <state relative-caret-position="227">
+              <caret line="39" column="103" lean-forward="false" selection-start-line="39" selection-start-column="103" selection-end-line="39" selection-end-column="103" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="QuestionSelect.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="QuestionSelect.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/classes/QuestionSelect.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="68" column="45" lean-forward="false" selection-start-line="68" selection-start-column="45" selection-end-line="68" selection-end-column="45" />
+            <state relative-caret-position="374">
+              <caret line="27" column="29" lean-forward="true" selection-start-line="27" selection-start-column="29" selection-end-line="27" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="QuestionSelectNumber.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/classes/QuestionSelectNumber.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="85">
+              <caret line="22" column="36" lean-forward="true" selection-start-line="22" selection-start-column="36" selection-end-line="22" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HtmlBuilder.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/classes/HtmlBuilder.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="51">
+              <caret line="8" column="6" lean-forward="false" selection-start-line="8" selection-start-column="6" selection-end-line="8" selection-end-column="6" />
               <folding />
             </state>
           </provider>
@@ -61,8 +81,8 @@
       <file leaf-file-name="index.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="20" column="24" lean-forward="false" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="24" />
+            <state relative-caret-position="85">
+              <caret line="5" column="37" lean-forward="false" selection-start-line="5" selection-start-column="37" selection-end-line="5" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -90,11 +110,12 @@
         <option value="$PROJECT_DIR$/sablony/otazkaText.php" />
         <option value="$PROJECT_DIR$/tridy/Otazka.php" />
         <option value="$PROJECT_DIR$/classes/HtmlBuilder.php" />
-        <option value="$PROJECT_DIR$/classes/QuestionText.php" />
         <option value="$PROJECT_DIR$/classes/Question.php" />
+        <option value="$PROJECT_DIR$/classes/QuestionText.php" />
         <option value="$PROJECT_DIR$/index.php" />
-        <option value="$PROJECT_DIR$/classes/Questionnaire.php" />
         <option value="$PROJECT_DIR$/classes/QuestionSelect.php" />
+        <option value="$PROJECT_DIR$/classes/QuestionSelectNumber.php" />
+        <option value="$PROJECT_DIR$/classes/Questionnaire.php" />
       </list>
     </option>
   </component>
@@ -106,10 +127,10 @@
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="241" />
+    <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="980" />
-    <option name="height" value="517" />
+    <option name="width" value="1382" />
+    <option name="height" value="744" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -188,7 +209,7 @@
       <workItem from="1521817837597" duration="628000" />
       <workItem from="1521878417586" duration="5052000" />
       <workItem from="1521895664621" duration="7212000" />
-      <workItem from="1522480413916" duration="7493000" />
+      <workItem from="1522480413916" duration="12387000" />
     </task>
     <task id="LOCAL-00001" summary="přidána validace textové otázky">
       <created>1521897801852</created>
@@ -197,11 +218,18 @@
       <option name="project" value="LOCAL" />
       <updated>1521897801852</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="dodělaná otázka s výběrem">
+      <created>1522490309571</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1522490309571</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="37558000" />
+    <option name="totallyTimeSpent" value="42452000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -230,12 +258,39 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+              <option name="COLUMN_ORDER">
+                <list>
+                  <option value="0" />
+                  <option value="1" />
+                  <option value="2" />
+                  <option value="3" />
+                </list>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="přidána validace textové otázky" />
-    <option name="LAST_COMMIT_MESSAGE" value="přidána validace textové otázky" />
+    <MESSAGE value="dodělaná otázka s výběrem" />
+    <option name="LAST_COMMIT_MESSAGE" value="dodělaná otázka s výběrem" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -462,30 +517,6 @@
     <entry file="file://$PROJECT_DIR$/tridy/OtazkaText.php" />
     <entry file="file://$PROJECT_DIR$/sablony/otazkaText.php" />
     <entry file="file://$PROJECT_DIR$/tridy/Otazka.php" />
-    <entry file="file://$PROJECT_DIR$/classes/HtmlBuilder.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/classes/QuestionText.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="13" column="0" lean-forward="true" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="24" lean-forward="false" selection-start-line="20" selection-start-column="12" selection-end-line="20" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/classes/Question.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -494,18 +525,88 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/classes/Questionnaire.php">
+    <entry file="file://$PROJECT_DIR$/classes/QuestionText.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="34" column="71" lean-forward="false" selection-start-line="34" selection-start-column="71" selection-end-line="34" selection-end-column="71" />
+        <state relative-caret-position="159">
+          <caret line="29" column="21" lean-forward="true" selection-start-line="29" selection-start-column="21" selection-end-line="29" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="uml://PHP/G:/xampp/htdocs/dotaznik">
+      <provider selected="true" editor-type-id="UmlEditorProvider">
+        <state>
+          <ID>PHP</ID>
+          <OriginalElement>$PROJECT_DIR$</OriginalElement>
+          <nodes>
+            <node x="" y="">$PROJECT_DIR$/classes</node>
+          </nodes>
+          <notes />
+          <edges />
+          <settings layout="Hierarchic Group" zoom="1.0" x="35.0" y="15.0" />
+          <SelectedNodes />
+          <Categories />
+          <VISIBILITY>private</VISIBILITY>
+        </state>
+      </provider>
+    </entry>
+    <entry file="uml://PHP/G:/xampp/htdocs/dotaznik/classes">
+      <provider selected="true" editor-type-id="UmlEditorProvider">
+        <state>
+          <ID>PHP</ID>
+          <OriginalElement>$PROJECT_DIR$/classes</OriginalElement>
+          <nodes>
+            <node x="" y="">\QuestionText</node>
+            <node x="" y="">\Questionnaire</node>
+            <node x="" y="">\Question</node>
+            <node x="" y="">\QuestionSelect</node>
+            <node x="" y="">\HtmlBuilder</node>
+          </nodes>
+          <notes />
+          <edges />
+          <settings layout="Hierarchic Group" zoom="1.0" x="118.5" y="130.0" />
+          <SelectedNodes />
+          <Categories />
+          <VISIBILITY>private</VISIBILITY>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="37" lean-forward="false" selection-start-line="5" selection-start-column="37" selection-end-line="5" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classes/HtmlBuilder.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="8" column="6" lean-forward="false" selection-start-line="8" selection-start-column="6" selection-end-line="8" selection-end-column="6" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/classes/QuestionSelect.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="68" column="45" lean-forward="false" selection-start-line="68" selection-start-column="45" selection-end-line="68" selection-end-column="45" />
+        <state relative-caret-position="374">
+          <caret line="27" column="29" lean-forward="true" selection-start-line="27" selection-start-column="29" selection-end-line="27" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classes/QuestionSelectNumber.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="22" column="36" lean-forward="true" selection-start-line="22" selection-start-column="36" selection-end-line="22" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/classes/Questionnaire.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="227">
+          <caret line="39" column="103" lean-forward="false" selection-start-line="39" selection-start-column="103" selection-end-line="39" selection-end-column="103" />
           <folding />
         </state>
       </provider>
