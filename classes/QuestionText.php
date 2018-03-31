@@ -11,9 +11,8 @@ class QuestionText extends Question
     const PLACEHOLDER = "Zadejte odpověď";
 
     private $value;
-    private $valid = true;
 
-    public function __construct($qustion, $name, $value = null, $reqired = true)
+    public function __construct($qustion, $name, $reqired = true, $value = null)
     {
         parent::__construct($qustion, $name, $reqired);
     }
@@ -21,9 +20,7 @@ class QuestionText extends Question
     public function setValue($value) {
         $this->value = $value;
     }
-    public function setValid($valid) {
-        $this->valid = $valid;
-    }
+
 
 
     public function render()

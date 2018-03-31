@@ -12,6 +12,9 @@ abstract class Question
     protected $name;
     protected $reqired;
 
+    protected $valid = true;
+
+
     public function __construct($qustion, $name, $rqired)
     {
         $this->question = $qustion;
@@ -28,6 +31,11 @@ abstract class Question
         $hb->closeElement();
         return $hb->render();
     }
+
+    public function setValid($valid) {
+        $this->valid = $valid;
+    }
+
 
     abstract function render();
 

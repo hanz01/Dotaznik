@@ -2,6 +2,8 @@
 include("classes/HtmlBuilder.php");
 include("classes/Question.php");
 include("classes/QuestionText.php");
+include("classes/QuestionSelect.php");
+
 include("classes/Questionnaire.php");
 $q = new Questionnaire("Dotazník 1", "Kategorie", 2018);
 if($q->isPosted()) {
@@ -16,6 +18,7 @@ if($q->isPosted()) {
     <title>Your Website</title>
 </head>
 <body>
+    <?= $q->renderHeader(); ?>
     <form method="post">
     <?= $q->render(); ?>
     </form>

@@ -31,11 +31,23 @@ class Questionnaire
     }
 
     private function initQuestions() {
-        for($i=1; $i<10; $i++) {
-            $q = new QuestionText("Text otázky " . $i, "text".$i, null);
+        for($i=1; $i<3; $i++) {
+            $q = new QuestionText("Text otázky " . $i, "text" . $i, true);
             $this->questions[] = $q;
         }
+        $this->questions[] = new QuestionSelect("Otázka s možností výběru", "vyb-1", 2);
+        $this->questions[] = new QuestionSelect("Otázka s možností výběru jedné odpovědi", "vyb-2", 1);
+
     }
+
+    public function renderHeader() {
+        $hb = new HtmlBuilder();
+        $hb->openElement("h1");
+        $hb->addValue($this->header);
+        $hb->closeElement();
+        return $hb->render();
+    }
+
 
     private function renderTop() {
         $hb= new HtmlBuilder();
@@ -63,12 +75,27 @@ class Questionnaire
         $valid = true;
         foreach($this->questions as $k => $v) {
             $name = $this->questions[$k]->getName();
-            $this->questions[$k]->setValue($_POST[$name]);
-            if(!$this->questions[$k]->validate()) {
-                $this->questions[$k]->setValid(false);
-                $valid = false;
+            if($this->questions[$k] instanceof QuestionText) {
+                $this->questions[$k]->setValue($_POST[$name]);
+                if (!$this->questions[$k]->validate()) {
+                    $this->questions[$k]->setValid(false);
+                    $valid = false;
+                }
             }
+            else if($this->questions[$k] instanceof QuestionSelect) {
+                if(isset($_POST[$name])) {
+                    $this->questions[$k]->setPosted($_POST[$name]);
+                    if(!$this->questions[$k]->validate()) {
+                        $valid = false;
+                    }
+                }
+                else {
+                    $this->questions[$k]->setValid(false);
+                    $this->questions[$k]->setMessage("Vyberte aspoň jednu možnost.");
+                    $valid = false;
+                }
 
+            }
         }
     }
 }
