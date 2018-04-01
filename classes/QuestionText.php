@@ -28,7 +28,7 @@ class QuestionText extends Question
 
     public function render()
     {
-        $params = array("name" => $this->name,  "placeholder" => self::PLACEHOLDER);
+        $params = array("type" => "text","name" => $this->name,  "placeholder" => self::PLACEHOLDER);
         if($this->reqired)
             $params["required"] = "required";
         if(!$this->valid)

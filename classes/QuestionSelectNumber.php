@@ -25,22 +25,27 @@ final class QuestionSelectNumber extends QuestionSelect
         }
     }
 
-    public function render() {
-        $hb= new HtmlBuilder();
+    public function render()
+    {
+        $hb = new HtmlBuilder();
         $type = "radio";
         $i = $this->minValue;
-        foreach($this->oppnions as $k => $v) {
+        foreach ($this->oppnions as $k => $v) {
             $name = $this->name;
             $args = array("type" => $type, "name" => $name, "value" => $v, "id" => $k);
             if (count($this->posted) == 1 && ($this->posted == $v)) {
                 $args["checked"] = "checked";
             }
             $hb->addElemnet("input", $args);
-            $hb->openElement("span");
-            $hb->addValue($i++);
-            $hb->closeElement();
-
         }
+        $hb->addElemnet("br");
+        for ($i = $this->minValue; $i <= $this->maxValue; $i++)
+        {
+            $hb->openElement("label", array("class" => "label-select-number"));
+            $hb->addValue($i);
+            $hb->closeElement();
+        }
+
         if(!$this->valid) {
             $hb->openElement("p");
             $hb->addValue($this->message);

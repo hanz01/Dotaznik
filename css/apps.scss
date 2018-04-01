@@ -1,6 +1,47 @@
 $bg: black;
+body {
+  line-height: 1.5;
+}
 form {
-  label, input, textarea {
-    font-size: 1.4em;
+  .question {
+      width: 75%;
+      max-width: 1250px;
+      margin: auto;
+      text-align: center;
+      label, input, textarea {
+        font-size: 1.4em;
+      }
+      input[type="text"] {
+        display: block;
+        width: 750px;
+        margin: 2px auto;
+        border: 1px solid blue;
+      }
+      textarea {
+        display: block;
+        height: 150px;
+        width: 755px;
+        margin: auto;
+      }
+      input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        margin-right: 10px;
+        margin-bottom: -12px;
+      }
+      input[type="radio"] {
+        width: 22px;
+        height: 22px;
+        margin-right: 10px;
+        margin-bottom: -12px;
+      }
+      .label-select-number {
+        display: inline-block;
+        width: 22px;
+        margin: 5px;
+        margin-top: -5px;
+      }
+
   }
+
 }
