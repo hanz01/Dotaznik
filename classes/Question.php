@@ -26,9 +26,16 @@ abstract class Question
     }
     protected function renderTop() {
         $hb = new HtmlBuilder();
+        $hb->openElement("div", array("class" => "question"));
         $hb->openElement("h2");
         $hb->addValue($this->question);
         $hb->closeElement();
+        return $hb->render();
+    }
+
+    protected function renderBottom() {
+        $hb = new HtmlBuilder();
+        $hb->closeElement("div");
         return $hb->render();
     }
 

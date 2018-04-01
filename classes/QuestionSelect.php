@@ -51,7 +51,6 @@ class QuestionSelect extends  Question
     public function render()
     {
         $i = 0;
-        $top = $this->renderTop();
         $hb= new HtmlBuilder();
         $type = "radio";
         if($this->max > 1)
@@ -87,8 +86,7 @@ class QuestionSelect extends  Question
             $hb->closeElement();
         }
         $hb->addElemnet("hr");
-        $output = $top . "" . $hb->render();
-        return $output;
+        return $this->renderTop() . $hb->render() . $this->renderBottom();
     }
 
     public function validate()

@@ -19,6 +19,8 @@ if($q->isPosted()) {
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>Your Website</title>
+    <link rel="stylesheet" href="css/apps.css" type="text/css" />
+    <script type="text/javascript" src="js/apps.js" ></script>
 </head>
 <body>
     <?= $q->renderHeader(); ?>

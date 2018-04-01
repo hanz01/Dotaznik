@@ -26,7 +26,6 @@ final class QuestionSelectNumber extends QuestionSelect
     }
 
     public function render() {
-        $top = $this->renderTop();
         $hb= new HtmlBuilder();
         $type = "radio";
         $i = $this->minValue;
@@ -48,7 +47,7 @@ final class QuestionSelectNumber extends QuestionSelect
             $hb->closeElement();
         }
         $hb->addElemnet("hr");
-        return $top . $hb->render();
+        return $this->renderTop() . $hb->render() . $this->renderBottom();
     }
 
 }

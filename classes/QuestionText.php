@@ -38,7 +38,7 @@ class QuestionText extends Question
         $hb = new HtmlBuilder();
         $hb->addElemnet("input", $params);
         $hb->addElemnet("hr");
-        return $this->renderTop() . $hb->render();
+        return $this->renderTop() . $hb->render() . $this->renderBottom();
     }
 
     public function validate()

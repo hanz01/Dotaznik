@@ -25,7 +25,7 @@ class QuestionTextLong extends QuestionText
         $hb->addValue($this->value);
         $hb->closeElement();
         $hb->addElemnet("hr");
-        return $this->renderTop() . $hb->render();
+        return $this->renderTop() . $hb->render() . $this->renderBottom();
     }
 
 }
