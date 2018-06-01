@@ -1,8 +1,11 @@
-$bg: black;
 body {
   line-height: 1.5;
 }
+h1 {
+  text-align: center;
+}
 form {
+  text-align: center;
   .question {
       width: 75%;
       max-width: 1250px;
@@ -15,7 +18,6 @@ form {
         display: block;
         width: 750px;
         margin: 2px auto;
-        border: 1px solid blue;
       }
       textarea {
         display: block;
@@ -34,6 +36,9 @@ form {
         height: 22px;
         margin-right: 10px;
         margin-bottom: -12px;
+      }
+      input[type="submit"] {
+        font-size: 1.5em;
       }
       .label-select-number {
         display: inline-block;
