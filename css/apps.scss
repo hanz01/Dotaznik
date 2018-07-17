@@ -1,6 +1,9 @@
 body {
   line-height: 1.5;
 }
+body.dragging, body.dragging * {
+  cursor: move !important;
+}
 h1 {
   text-align: center;
 }
@@ -49,4 +52,8 @@ form {
 
   }
 
+}
+
+li {
+  list-style-type: none !important;
 }
