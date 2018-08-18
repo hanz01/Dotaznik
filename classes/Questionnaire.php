@@ -8,6 +8,7 @@
 
 class Questionnaire
 {
+    private $id;
     private $header;
     private $category;
     private $year;
@@ -16,12 +17,13 @@ class Questionnaire
 
     private $questions;
 
-    public function __construct($header, $category, $year)
+    public function __construct($header, $info, $category, $year, $id)
     {
         $this->header = $header;
         $this->category = $category;
         $this->year = $year;
         $this->posted = isset($_POST['form-name']) && $_POST['form-name'] == $this->header;
+        $this->id = $id;
         $this->initQuestions();
 
     }
@@ -30,14 +32,44 @@ class Questionnaire
         return $this->posted;
     }
 
+
+
     private function initQuestions() {
+        $moznosti = Db::queryAll('SELECT * FROM otazky WHERE dotaznik_id = ?', $this->id);
+        if(count($moznosti) == 0)
+            return false;
+        $i = 1;
+        foreach($moznosti as $m) {
+            switch($m['typ']) {
+                case 'kratka' :
+                    $this->questions[] = new QuestionText($m['otazka'], $m['doplneni'], 'ot-'. $i);
+                    break;
+                case 'dlouha' :
+                    $this->questions[] = new QuestionTextLong($m['otazka'], $m['doplneni'], 'ot-'. $i);
+                    break;
+                case '1':
+                    $this->questions[] = new QuestionSelect($m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id']);
+                    break;
+                case ($m['typ'] == '2' || $m['typ'] == '3' || $m['typ'] == '4') :
+                    $this->questions[] = new QuestionSelect($m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id']);
+                    break;
+                default :
+                    $cisla = explode("-", $m['typ']);
+                    $min = $cisla[0];
+                    $max = $cisla[1];
+                    $this->questions[] = new QuestionSelectNumber($m['otazka'], $m['doplneni'], 'ot-'. $i, $min, $max, $m['label1'], $m['label2'], $m['cancel']);
+                    break;
+            }
+            $i++;
 
-        $this->questions[] = new QuestionText("Text otázky ", "text", true);
-        $this->questions[] = new QuestionTextLong("Text otázky ", "text2", true);
-        $this->questions[] = new QuestionSelect("Otázka s možností výběru", "vyb-1", 2);
-        $this->questions[] = new QuestionSelect("Otázka s možností výběru jedné odpovědi", "vyb-2", 1);
-        $this->questions[] = new QuestionSelectNumber("Otázka s možností výběru jedné odpovědi", "vyb-3", 1, 5);
-
+        }
+        /*$
+        this->questions[] = new QuestionText("Text otázky ", "text", "text", true);
+        $this->questions[] = new QuestionTextLong("Text otázky ", "text", "text2", true);
+        $this->questions[] = new QuestionSelect("Otázka s možností výběru", "text", "vyb-1", 2);
+        $this->questions[] = new QuestionSelect("Otázka s možností výběru jedné odpovědi", "text", "vyb-2", 1);
+        $this->questions[] = new QuestionSelectNumber("Otázka s možností výběru jedné odpovědi", "text", "vyb-3", 1, 5, true);
+        */
     }
 
     public function renderHeader() {

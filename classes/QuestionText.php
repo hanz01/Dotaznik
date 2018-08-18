@@ -12,9 +12,9 @@ class QuestionText extends Question
 
     protected $value;
 
-    public function __construct($qustion, $name, $reqired = true, $value = null)
+    public function __construct($qustion, $note, $name, $reqired = true, $value = null)
     {
-        parent::__construct($qustion, $name, $reqired);
+        parent::__construct($qustion, $note, $name, $reqired);
     }
 
     public function setValue($value) {

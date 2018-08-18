@@ -9,14 +9,18 @@
 abstract class Question
 {
     protected $question;
+    protected $note;
     protected $name;
     protected $reqired;
 
     protected $valid = true;
 
+    protected $id;
 
-    public function __construct($qustion, $name, $rqired)
+
+    public function __construct($qustion, $note, $name, $rqired)
     {
+        $this->note = $note;
         $this->question = $qustion;
         $this->name = $name;
         $this->reqired = $rqired;
@@ -30,6 +34,11 @@ abstract class Question
         $hb->openElement("h2");
         $hb->addValue($this->question);
         $hb->closeElement();
+        if($this->note != NULL) {
+            $hb->openElement("p");
+            $hb->addValue($this->note);
+            $hb->closeElement();
+        }
         return $hb->render();
     }
 

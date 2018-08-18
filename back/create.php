@@ -1,16 +1,62 @@
 <?php
-if($_POST) {
-    $otazky = array();
-   foreach($_POST as $p) {
-        if(is_array($p)) {
-            $pocet = count($_POST['otazka']);
+include("../config.php");
+include("../classes/Db.php");
+Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
 
-            print_r($p);
+
+if($_POST) {
+    if(isset($_POST['otazka'])) {
+        $form = array(
+            'nazev' => $_POST['nazev'],
+            'doplneni' => $_POST['informace'],
+            'kategorie' => $_POST['kategorie'],
+            'rok' => $_POST['rok']
+        );
+        Db::insert($tables['dotaznik'], $form);
+        $dotaznik = Db::getLastId($tables['dotaznik']);
+        $pocet = count($_POST['otazka']);
+        for ($i = 0; $i < $pocet; $i++) {
+            $otazka = $_POST['otazka'][$i];
+            $doplneni = $_POST['poznamka'][$i];
+            $typ = $_POST['typ'][$i];
+            $otazka = $_POST['otazka'][$i];
+            $label1 = $_POST['lable1'][$i];
+            $label2 = $_POST['lable2'][$i];
+            if (!isset($_POST['cancel'][$i]))
+                $cancel = 'NULL';
+            else
+                $cancel = $_POST['cancel'][$i];
+            $otazka = array(
+                    'dotaznik_id' => $dotaznik,
+                    'otazka' => $otazka,
+                    'doplneni' => $doplneni,
+                    'typ' => $typ,
+                    'label1' => $label1,
+                    'label2' => $label2,
+                    'cancel' => $cancel
+            );
+            Db::insert($tables['otazky'], $otazka);
+
+            $a = $i+1; //možnost index
+            $moznosti = $_POST['moznost']['moznost-' . $a];
+
+
+            if(is_array($moznosti) and $moznosti[0] != 'NULL') {
+                $id = Db::getLastId($tables['otazky']);
+                foreach ($moznosti as $m) {
+                    $moznost = array(
+                            'moznost' => $m,
+                            'dotaznik_id' => $id
+                    );
+                    Db::insert($tables['moznosti'], $moznost);
+                }
+            }
         }
     }
+
 }
 ?>
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -25,11 +71,14 @@ if($_POST) {
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
 
     <script type="text/javascript">
        // pole kde index je id otázky a hodbota počet možností
        var moznosti = new Array();
+       var pole = null;
         /*
         funkce přidá novou odpověď
          */
@@ -129,11 +178,35 @@ if($_POST) {
                     return false;
 
                 }
+            });
 
-
-
+            $(document).on('dblclick', "input", function () {
+                $("#db").modal();
+                val = $(this).val();
+                pole = $(this);
 
             });
+            $("#modal").click(function(){
+                pole.val(pole.val() + " " + $("#db-data").text());
+                $("#db").hide();
+            });
+            $("#vloz-otazky").click(function() {
+                kategorie = $("select[name=kategorie2]").val();
+                rok = $("select[name=rok2]").val();
+                data = {
+                    'kategorie': kategorie,
+                    'rok': rok
+                };
+                $.post('ajax.php', data, function(data, st) {
+                   if(st == 'success') {
+                       $("#otazky-db").html(data);
+                   }
+                });
+            });
+
+            $(document).on('click', ".data-db", function() {
+                $("#db-data").text($(this).text());
+            })
         });
 
 
@@ -145,8 +218,19 @@ if($_POST) {
 <form method="post">
     <header class="bg-danger color-white">
         <h1>Nový dotazník</h1>
+        <div class="container ">
+                <input type="text" name="nazev" class="form-control" placeholder="Název formuláře" /><br />
+                <textarea name="informace" class="form-control" placeholder="Informace pro doplnění" ></textarea><br />
+                <select name="kategorie" class="form-control" placeholder="kategorie">
+                    <option vlaue="senior">Senior</option>
+                    <option value="kadet">Kadet</option>
+                </select><br />
+                <select name="rok" class="form-control">
+                    <option vlaue="<?= date('Y') ?>"><?= date('Y') ?></option>
+                    <option vlaue="<?= date('Y') + 1 ?>"><?= date('Y') + 1 ?></option>
+                </select>
 
-    tady budou základní údaje
+        </div>
         <h2>Otázky</h2>
     </header>
     <div class="clearfix"></div>
@@ -196,9 +280,11 @@ if($_POST) {
                     <option value="kratka">Krátká odpověď</option>
                     <option value="dlouha">Dlouhá odpověď</option>
                 </select>
-                <input type="hidden" class="moznosti" name="" value="hidden" />
-                <input type="hidden" name="lable1[]" value="hidden" />
-                <input type="hidden" name="lable2[]" value="hidden" />
+                <input type="hidden" class="moznosti" name="moznost[][]" value="NULL" />
+                <input type="hidden" name="lable1[]" value="NULL" />
+                <input type="hidden" name="lable2[]" value="NULL" />
+                <input type="hidden" name="cancel[]" value="NULL" />
+
             </div>
         </div>
 
@@ -221,7 +307,7 @@ if($_POST) {
         <input type="text" name="poznamka[]" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
         <div class="row">
             <div class="col-lg-2 col-md-12 col-form-label">
-                <label>Počet možností</label>
+                <label>Maximální počet odpovědí</label>
             </div>
             <div class="col-lg-10 col-md-12">
                 <select name="typ[]" class="form-control text-center">
@@ -244,8 +330,9 @@ if($_POST) {
             </div>
 
     </div>
-    <input type="hidden" name="lable1[]" value="hidden" />
-    <input type="hidden" name="lable2[]" value="hidden" />
+    <input type="hidden" name="lable1[]" value="NULL" />
+    <input type="hidden" name="lable2[]" value="NULL" />
+    <input type="hidden" name="cancel[]" value="NULL" />
 </template>
 
 <template id="skala">
@@ -270,7 +357,7 @@ if($_POST) {
                     <option value="0-5">0 - 5</option>
                     <option value="1-5">1 - 5</option>
                 </select>
-                <input type="hidden" class="moznosti" name="" value="hidden" />
+                <input type="hidden" class="moznosti" name="moznost[][]" value="NULL" />
 
             </div>
         </div>
@@ -282,9 +369,60 @@ if($_POST) {
                 <input type="text" name="lable2[]" class="form-control" placeholder="Štítek pro poslední číslo"/>
             </div>
         </div>
+            Vzít odpověď zpět:
+            <input type="checkbox" name="cancel[]" value="Nechci odpovídat" />
+
+    </div>
+
     </div>
 </template>
 
+
+<!-- The Modal -->
+<div class="modal fade" id="db">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Výběr dat z databáze soutěže</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form method="post">
+                    <?php
+                    $kategorie = Db::queryAll('SELECT id, nazev FROM ' . $bebras['kategorie']);
+                    ?>
+                    <sapn>Rok:</sapn>
+                    <select name="rok">
+                        <option value="<?= date('Y'); ?>"><?= date('Y') ?></option>
+                        <option value="<?= date('Y')- 1; ?>"><?= date('Y') - 1 ?></option>
+                        <option value="<?= date('Y') - 2; ?>"><?= date('Y') - 2 ?></option>
+                    </select>
+                    <?php if(count($kategorie) > 0) : ?>
+                    <span>Kategorie</span>
+                    <select name="kategorie2">
+                        <?php foreach ($kategorie as $k) : ?>
+                        <option value="<?= $k['id'] ?>"><?= $k['nazev'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <?php endif; ?>
+                    <input type="button" id="vloz-otazky" value="Zobrazit otázky" />
+                </form>
+                <ul id="otazky-db">
+
+                </ul>
+                <p>Vybraná data <span id="db-data">dd</span></p>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="modal" data-dismiss="modal">Vložit data</button>
+            </div>
+
+        </div>
 
 </body>
 </html>

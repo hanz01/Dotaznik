@@ -16,21 +16,25 @@ class QuestionSelect extends  Question
 
     protected $message;
 
-    public function __construct($qustion, $name, $max, $rqired = true)
+    public function __construct($qustion, $note, $name, $max, $id, $rqired = true)
     {
-        parent::__construct($qustion, $name, $rqired);
+        parent::__construct($qustion, $note, $name, $rqired);
         $this->max = $max;
+        $this->id = $id;
         $this->initOppnions();
     }
 
-    public function __construct1($qustion, $name, $max, $rqired = true)
+    public function __construct1($qustion, $note, $name, $max, $rqired = true)
     {
-        parent::__construct($qustion, $name, $rqired);
+        parent::__construct($qustion, $note, $name, $rqired);
         $this->max = $max;
     }
     private function initOppnions() {
-        for($i=0; $i<=5; $i++) {
-            $this->oppnions['op-'.$i] = "Možnost " . $i;
+        $op = Db::queryAll('SELECT * FROM moznosti WHERE dotaznik_id = ?', $this->id);
+        $i=0;
+        foreach($op as $o) {
+            $this->oppnions['op'.$i] = $o['moznost'];
+            $i += 1;
         }
     }
 
@@ -43,7 +47,7 @@ class QuestionSelect extends  Question
     }
     public function getData() {
         if($this->max > 1)
-            return implode(";", array_keys ($this->posted));
+            return implode(";", array_values($this->posted));
         else
             return $this->posted;
     }
@@ -56,19 +60,19 @@ class QuestionSelect extends  Question
         if($this->max > 1)
             $type = "checkbox";
         foreach($this->oppnions as $k => $v) {
-
             if($this->max > 1)
                 $name = $this->name . "[op".$i."]";
             else
                 $name = $this->name;
             $args = array("type" => $type, "name" => $name, "value" => $v, "id" => $k);
             if(count($this->posted) > 0 && $this->max > 1) {
-                foreach ($this->posted as $v) {
-                    if ($v == $this->oppnions["op-".$i]) {
+                foreach ($this->posted as $p) {
+                    if ($p == $this->oppnions["op" . $i]) {
                         $args["checked"] = "checked";
                         break;
                     }
                 }
+
             }
             if(count($this->posted) == 1 && ($this->posted == $v)) {
                 $args["checked"] = "checked";
