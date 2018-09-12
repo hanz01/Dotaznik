@@ -3,7 +3,7 @@ include("../config.php");
 include("../classes/Db.php");
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
 
-
+$kategorie = Db::queryAll('SELECT id, nazev FROM ' . $bebras['kategorie']);
 if($_POST) {
     if(isset($_POST['otazka'])) {
         $form = array(
@@ -46,12 +46,13 @@ if($_POST) {
                 foreach ($moznosti as $m) {
                     $moznost = array(
                             'moznost' => $m,
-                            'dotaznik_id' => $id
+                            'otazky_id' => $id
                     );
                     Db::insert($tables['moznosti'], $moznost);
                 }
             }
         }
+        header('location: admin.php?vytvoreno=ok');
     }
 
 }
@@ -75,156 +76,31 @@ if($_POST) {
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
 
-    <script type="text/javascript">
-       // pole kde index je id otázky a hodbota počet možností
-       var moznosti = new Array();
-       var pole = null;
-        /*
-        funkce přidá novou odpověď
-         */
-        function addMoznost(data) {
-            nameAtr = data.attr('data');
-            index = nameAtr.split("[")[1].split("]")[0];
-            if(moznosti[index] != undefined) {
-                moznosti[index] += 1;
-            } else {
-                moznosti[index] = 2;
-            }
-            str = '<div class="row">' +
-                '<div class="col-lg-11">' +
-                '     <input type="text" class="form-control" name="'+nameAtr+'" placeholder="Odpověď" />' +
-                '                </div>' +
-                '                <div class="col-lg-1">' +
-                '                <i class="fa fa-close col-lg-1 text-center"  data="'+nameAtr+'" onclick="if(abbleToDelete($(this)) )$(this).parent().parent().remove()"></i>' +
-                '                <i class="fa fa-plus-square" data="'+nameAtr+'" style="font-size:25px;" onclick="$(this).parent().parent().after(addMoznost($(this)))"></i>' +
-                '                </div></div>';
-                        return str;
-        }
-
-       /**
-        * metoda ktera rozhodne jestli se může odstranit možnost
-        * @param data instance tlačítka
-        * @returns {boolean} true když může odstranit
-        */
-        function abbleToDelete(data) {
-            nameAtr = data.attr('data');
-            index = nameAtr.split("[")[1].split("]")[0];
-            if(moznosti[index] > 2) {
-                moznosti[index] -= 1;
-                return true;
-            }
-            return false;
-        }
-
-        var pocet = 0;
-       $('input').on('blur', function(){
-           alert("Vsvc ");
-       })
-        $(document).ready(function(){
-            $(".sortable").sortable({
-                items: ".s1"
-            });
-
-            $("#add").click(function(){
-                clon = '';
-                value = $('select[name="uestionType"]').val();
-                switch(value) {
-                    case 'tvorena' :
-                        temp = document.getElementsByTagName("template")[0];
-                        clon = temp.content.cloneNode(true);
-                        break;
-                    case 'vyber' :
-                        temp = document.getElementsByTagName("template")[1];
-                        clon = temp.content.cloneNode(true);
-                        break;
-                    case 'skala' :
-                        temp = document.getElementsByTagName("template")[2];
-                        clon = temp.content.cloneNode(true);
-                        break;
-                }
-                pocet += 1;
-                elem = clon.querySelector("div");
-                remove = clon.querySelector(".delete");
-                moznostiName = clon.querySelector(".moznosti");
-                moznostiName.name = 'moznost[moznost-' + pocet + '][]';
-
-                if(value == 'vyber') {
-                    add = clon.querySelector(".add");
-                    add.setAttribute('data', 'moznost[moznost-' + pocet + '][]');
-                    add = clon.querySelector(".deleteMoznost");
-                    add.setAttribute('data', 'moznost[moznost-' + pocet + '][]');
-                }
-                elem.id = 'q-' + pocet;
-                remove.id = 'delete-' + pocet;
-                $("#dotaznik").append(clon);
-            });
-            function validateForm(form) {
-                valid = true;
-                for (i=0; i<form.length; i++)
-                    if(form[i].value == "" && form[i].name != "poznamka[]") {
-                        form[i].style.border = '1px solid red';
-                        valid = false;
-                    }
-                    else {
-                        form[i].style.border = '1px solid green';
-                    }
-                return valid;
-            }
-            //kliknutí na uložení dotazníku
-            $("#save").click(function(){
-                var nodes = document.querySelectorAll("input[type=text], input[type=hidden], select");
-                if(validateForm(nodes) == false) {
-                    alert("Formulář nebyl vyplněn korektně");
-                    return false;
-
-                }
-            });
-
-            $(document).on('dblclick', "input", function () {
-                $("#db").modal();
-                val = $(this).val();
-                pole = $(this);
-
-            });
-            $("#modal").click(function(){
-                pole.val(pole.val() + " " + $("#db-data").text());
-                $("#db").hide();
-            });
-            $("#vloz-otazky").click(function() {
-                kategorie = $("select[name=kategorie2]").val();
-                rok = $("select[name=rok2]").val();
-                data = {
-                    'kategorie': kategorie,
-                    'rok': rok
-                };
-                $.post('ajax.php', data, function(data, st) {
-                   if(st == 'success') {
-                       $("#otazky-db").html(data);
-                   }
-                });
-            });
-
-            $(document).on('click', ".data-db", function() {
-                $("#db-data").text($(this).text());
-            })
-        });
-
-
-
-
-    </script>
+    <script type="text/javascript" src="editor.js">   </script>
 </head>
 <body  class="bg-primary">
+<p id="pocet" style="display: none">0</p>
 <form method="post">
     <header class="bg-danger color-white">
         <h1>Nový dotazník</h1>
         <div class="container ">
                 <input type="text" name="nazev" class="form-control" placeholder="Název formuláře" /><br />
                 <textarea name="informace" class="form-control" placeholder="Informace pro doplnění" ></textarea><br />
-                <select name="kategorie" class="form-control" placeholder="kategorie">
-                    <option vlaue="senior">Senior</option>
-                    <option value="kadet">Kadet</option>
-                </select><br />
+            <?php if(count($kategorie) > 0) : ?>
+             <div class="row">
+                <div class="col-lg-2 md-6">
+                    <span>Kategorie</span>
+                </div>
+                <div class="col-lg-10 md-6">
+                    <select name="kategorie" class="form-control">
+                        <?php foreach ($kategorie as $k) : ?>
+                            <option value="<?= $k['id'] ?>"><?= $k['nazev'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+             </div>
+            <br />
+            <?php endif; ?>
                 <select name="rok" class="form-control">
                     <option vlaue="<?= date('Y') ?>"><?= date('Y') ?></option>
                     <option vlaue="<?= date('Y') + 1 ?>"><?= date('Y') + 1 ?></option>
@@ -245,6 +121,7 @@ if($_POST) {
                         <option value="tvorena">Tvořená odpověď</option>
                         <option value="vyber">Výběr odpovědi</option>
                         <option value="skala">Škála</option>
+                        <option value="sada">Škála sada</option>
                     </select>
                 </div>
                 <div class="col-lg-6">
@@ -377,6 +254,48 @@ if($_POST) {
     </div>
 </template>
 
+<template id="sada">
+    <div id="" class="s1 bg-light jumbotron">
+        <div class="row">
+            <div class="col-lg-10 col-md-10 col-sm-12">
+                <h3>Škála sada</h3>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-12 text-right">
+                <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
+            </div>
+        </div>
+        <input type="text" name="otazka[]" class="form-control" placeholder="Zadejte text otázky" />
+        <br />
+        <input type="text" name="poznamka[]" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
+
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <input type="text" name="lable1[]"  class="form-control" placeholder="Štítek pro první číslo" />
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <input type="text" name="lable2[]" class="form-control" placeholder="Štítek pro poslední číslo"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-2 col-md-12 col-form-label">
+                <label>Rozsah</label>
+            </div>
+            <div class="col-lg-10 col-md-12">
+                <select name="typ[]" class="form-control text-center">
+                    <option value="sada1">0 - 5</option>
+                    <option value="sada2">1 - 5</option>
+                </select>
+                <input type="hidden" class="moznosti" name="moznost[][]" value="NULL" />
+
+            </div>
+        </div>
+        Vzít odpověď zpět:
+        <input type="checkbox" name="cancel[]" value="Nechci odpovídat" />
+
+    </div>
+
+    </div>
+</template>
 
 <!-- The Modal -->
 <div class="modal fade" id="db">
@@ -392,9 +311,7 @@ if($_POST) {
             <!-- Modal body -->
             <div class="modal-body">
                 <form method="post">
-                    <?php
-                    $kategorie = Db::queryAll('SELECT id, nazev FROM ' . $bebras['kategorie']);
-                    ?>
+
                     <sapn>Rok:</sapn>
                     <select name="rok">
                         <option value="<?= date('Y'); ?>"><?= date('Y') ?></option>

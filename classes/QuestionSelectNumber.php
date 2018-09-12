@@ -6,16 +6,16 @@
  * Time: 12:20
  */
 
-final class QuestionSelectNumber extends QuestionSelect
+class QuestionSelectNumber extends QuestionSelect
 {
 
-    private $maxValue;
-    private $minValue;
+    protected $maxValue;
+    protected $minValue;
 
-    private $label1;
-    private $label2;
+    protected $label1;
+    protected $label2;
 
-    private $cancel;
+    protected $cancel;
 
     public function __construct($qustion, $note, $name, $minValue, $maxValue, $label1, $label2, $cancel = null, $rqired = true)
     {
@@ -54,7 +54,7 @@ final class QuestionSelectNumber extends QuestionSelect
             $hb->closeElement("td");
         }
         $hb->openElement("tr");
-           foreach ($this->oppnions as $k => $v) {
+        foreach ($this->oppnions as $k => $v) {
             $name = $this->name;
             $args = array("type" => $type, "name" => $name, "value" => $v, "id" => $k);
             if (count($this->posted) == 1 && ($this->posted == $v)) {

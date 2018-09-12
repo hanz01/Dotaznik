@@ -13,9 +13,10 @@ abstract class Question
     protected $name;
     protected $reqired;
 
+    protected $id;
+
     protected $valid = true;
 
-    protected $id;
 
 
     public function __construct($qustion, $note, $name, $rqired)
@@ -25,9 +26,18 @@ abstract class Question
         $this->name = $name;
         $this->reqired = $rqired;
     }
+
     public function getName() {
         return $this->name;
     }
+
+    public function setId($id) {
+        $this->id = $id;
+    }
+    public function getId() {
+        return $this->id;
+    }
+
     protected function renderTop() {
         $hb = new HtmlBuilder();
         $hb->openElement("div", array("class" => "question"));
@@ -50,6 +60,10 @@ abstract class Question
 
     public function setValid($valid) {
         $this->valid = $valid;
+    }
+
+    public function getQuestion() {
+        return $this->question;
     }
 
 

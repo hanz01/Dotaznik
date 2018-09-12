@@ -2,7 +2,28 @@
 include("../config.php");
 include("../classes/Db.php");
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
-$data = Db::queryAll('SELECT * FROM ' . $tables['dotaznik']);
+$data = Db::queryAll('SELECT * FROM ' . $tables['dotaznik'] . ' JOIN ' . $bebras['kategorie'] . ' ON id = kategorie');
+$data1 = Db::queryAll('SELECT * FROM ' . $tables['dotaznik']);
+
+if(isset($_GET['spustit']) && $_GET['spustit'] > 0) {
+    $q = Db::query('UPDATE ' . $tables['dotaznik'] . ' SET stav = 1 WHERE dotaznik_id = ?', $_GET['spustit']);
+    if($q) {
+        header('location: admin.php');
+    }
+}
+
+if(isset($_GET['konec']) && $_GET['konec'] > 0) {
+    $q = Db::query('UPDATE ' . $tables['dotaznik'] . ' SET stav = 2 WHERE dotaznik_id = ?', $_GET['konec']);
+    if($q) {
+        header('location: admin.php');
+    }
+}
+if(isset($_GET['delete']) && $_GET['delete'] > 0) {
+    $q = Db::query('DELETE FROM ' . $tables['dotaznik'] . ' WHERE dotaznik_id = ?', $_GET['delete']);
+    if($q) {
+        header('location: admin.php');
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -25,7 +46,13 @@ $data = Db::queryAll('SELECT * FROM ' . $tables['dotaznik']);
 </head>
 <body>
     <div class="container">
+        <?php
+        if(isset($_GET['vytvoreno'])) {
+            echo '<p>Dotazník byl vytvořen</p>';
+        }
+        ?>
         <h2 class="text-center">Seznam dotazníků</h2>
+        <h4><a href="create.php">Vytvořit nový</a></h4>
         <?php if(count($data) > 0) : ?>
             <table class="table">
                 <tr>
@@ -35,23 +62,31 @@ $data = Db::queryAll('SELECT * FROM ' . $tables['dotaznik']);
                     <th>Datum vytvoření</th>
                     <th>Stav</th>
                 </tr>
-                <?php foreach($data as $d) : ?>
+                <?php $i=0; foreach($data as $d) : ?>
                 <tr>
-                    <td><a href="nahled.php?id=<?= $d['dotaznik_id'] ?>"><?= $d['nazev'] ?></a></td>
-                    <td><?= $d['kategorie'] ?></td>
+                    <td><a href="nahled.php?id=<?= $d['dotaznik_id'] ?>"><?= $data1[$i]['nazev'] ?></a></td>
+                    <td><?= $d['nazev'] ?></td>
                     <td><?= $d['rok'] ?></td>
                     <td><?= $d['vytvoreno'] ?></td>
                     <td>
+                         <?php
+                         $pocet = Db::queryOne('SELECT count(*) FROM (SELECT count(*) FROM `odpovedi` WHERE dotaznik_id = '.  $d['dotaznik_id'] .' GROUP by respondent ) as g');
+                         ?>
                         <?php if($d['stav'] == 0)
-                            echo 'Rozpracováný <a href="?spustit='.$d['dotaznik_id'].'">spustit</a>';
-                        elseif($d['stav'] == 1)
-                            echo "Probíhající ukončit";
-                        else
-                            echo "Ukončený";
+                            echo 'Rozpracováný <a href="?spustit='.$d['dotaznik_id'].'">spustit <a href="edit.php?id='.$d['dotaznik_id'].'">Upravit</a> <a href="?delete='.$d['dotaznik_id'].'">Smazat</a></a>';
+                        elseif($d['stav'] == 1) {
+                            echo 'Probíhající <a href="?konec=' . $d['dotaznik_id'] . '">ukončit</a><br />';
+                            echo("Počet respondentů: " . $pocet['count(*)']);
+                        }
+
+                        else {
+                            echo 'Ukončený <a href="?vysledek=' . $d['dotaznik_id'] . '">výsledky <a href="?delete=' . $d['dotaznik_id'] . '">Smazat</a></a>';
+                            echo("Počet respondentů: " . $pocet['count(*)']);
+                        }
                             ?>
                         </td>
                 </tr>
-                <?php endforeach; ?>
+                <?php $i++; endforeach; ?>
             </table>
         <?php else : ?>
         <h3 class="text-center">Nebyli nalezeny žádné dotazníky</h3>

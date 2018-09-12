@@ -12,7 +12,7 @@ class QuestionText extends Question
 
     protected $value;
 
-    public function __construct($qustion, $note, $name, $reqired = true, $value = null)
+    public function __construct($qustion, $note, $name, $reqired = false, $value = null)
     {
         parent::__construct($qustion, $note, $name, $reqired);
     }
@@ -21,7 +21,10 @@ class QuestionText extends Question
         $this->value = $value;
     }
     public function getData() {
-        return $this->value;
+        if($this->value == "")
+            return 'NULL';
+        else
+            return $this->value;
     }
 
 
@@ -46,7 +49,6 @@ class QuestionText extends Question
         if($this->reqired) {
             return $this->value != null;
         }
-        return true;
 
     }
 }

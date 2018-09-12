@@ -15,12 +15,20 @@ $db = array(
 $tables = array(
     'dotaznik' => 'dotaznik',
     'otazky' => 'otazky',
-    'moznosti' => 'moznosti'
+    'moznosti' => 'moznosti',
+    'odpovedi' => 'odpovedi'
 );
 
 $bebras = array(
     'otazky' => 'soutezni_otazky',
     'kategorie' => 'kategorie'
+);
+
+$typy = array(
+      'kratka' => 'Krátká odpověď',
+      'dlouha' => 'Dlouhá odpověď',
+      'sada1' => '0-5',
+      'sada2' => '1-5'
 );
 
 

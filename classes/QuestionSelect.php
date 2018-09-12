@@ -30,7 +30,7 @@ class QuestionSelect extends  Question
         $this->max = $max;
     }
     private function initOppnions() {
-        $op = Db::queryAll('SELECT * FROM moznosti WHERE dotaznik_id = ?', $this->id);
+        $op = Db::queryAll('SELECT * FROM moznosti WHERE otazky_id = ?', $this->id);
         $i=0;
         foreach($op as $o) {
             $this->oppnions['op'.$i] = $o['moznost'];
@@ -96,15 +96,16 @@ class QuestionSelect extends  Question
     public function validate()
     {
         if($this->reqired) {
-            if(count($this->posted) > 0 && count($this->posted) <= $this->max) {
+            if(count($this->posted) <= $this->max) {
                 return true;
             }
             else {
-                $this->message = "Musíte zaškrtnout více než 1 položku a méně než " . $this->max;
+                $this->message = "Vyberte maximálně: " . $this->max;
                 $this->setValid(false);
                 return false;
             }
         }
+
 
     }
 }

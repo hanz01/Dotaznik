@@ -8,7 +8,7 @@
 
 class QuestionTextLong extends QuestionText
 {
-    public function __construct($qustion, $note, $name, $reqired = true, $value = null)
+    public function __construct($qustion, $note, $name, $reqired = false, $value = null)
     {
         parent::__construct($qustion, $note, $name, $reqired, $value);
     }

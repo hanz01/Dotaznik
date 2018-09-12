@@ -53,6 +53,18 @@ class Questionnaire
                 case ($m['typ'] == '2' || $m['typ'] == '3' || $m['typ'] == '4') :
                     $this->questions[] = new QuestionSelect($m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id']);
                     break;
+                case ($m['typ'] == 'sada2' || $m['typ'] == 'sada1') :
+                    if($m['typ'] == 'sada1') {
+                        $min = 0;
+                        $max = 5;
+                    }
+                    else {
+                        $min = 1;
+                        $max = 5;
+                    }
+                    $this->questions[] = new QuestionSelectNumberSet($m['otazka'], $m['doplneni'], 'ot-'. $i, $min, $max, $m['label1'], $m['label2'], $this->category, $m['cancel']);
+
+                    break;
                 default :
                     $cisla = explode("-", $m['typ']);
                     $min = $cisla[0];
@@ -60,6 +72,7 @@ class Questionnaire
                     $this->questions[] = new QuestionSelectNumber($m['otazka'], $m['doplneni'], 'ot-'. $i, $min, $max, $m['label1'], $m['label2'], $m['cancel']);
                     break;
             }
+            $this->questions[$i-1]->setId($m['otazky_id']);
             $i++;
 
         }
@@ -105,14 +118,11 @@ class Questionnaire
 
     public function validateForm() {
         $valid = true;
+        $pocetSada = 0;
         foreach($this->questions as $k => $v) {
             $name = $this->questions[$k]->getName();
             if($this->questions[$k] instanceof QuestionText) {
                 $this->questions[$k]->setValue($_POST[$name]);
-                if (!$this->questions[$k]->validate()) {
-                    $this->questions[$k]->setValid(false);
-                    $valid = false;
-                }
             }
             else if($this->questions[$k] instanceof QuestionSelect) {
                 if(isset($_POST[$name])) {
@@ -121,23 +131,38 @@ class Questionnaire
                         $valid = false;
                     }
                 }
-                else {
-                    $this->questions[$k]->setValid(false);
-                    $this->questions[$k]->setMessage("Vyberte aspoň jednu možnost.");
-                    $valid = false;
+                if($this->questions[$k] instanceof QuestionSelectNumberSet) {
+                       $pocet = count($this->questions[$k]->getQuestions());
+                       @$this->questions[$k]->setPosted($_POST[$name . "-" . $pocetSada], $name . "-" . $pocetSada);
+                       for($i=0; $i<$pocet; $i++) {
+                           if(!empty($_POST[$name . "-" . $i]))
+                                $data[] = $_POST[$name . "-" . $i];
+                           else
+                               $data[] = 'x';
+                           $this->questions[$k]->setPosted($data);
+                       }
+                       unset($data);
                 }
+
             }
         }
-        if($valid) {
-            $this->getData();
-        }
+        return $valid;
+
     }
 
-    private function getData() {
-        $data = "";
+    public function getData() {
+        $data = array();
         foreach ($this->questions as $item) {
-            $data .= $item->getName() . " " .  $item->getData() . "<br />";
+            if(is_array($item->getData()))
+                $temp = 'NULL';
+            else
+                $temp = $item->getData();
+            $data[$item->getId()] = $temp;
         }
-        echo $data;
+        return $data;
+    }
+
+    public function getId() {
+        return $this->id;
     }
 }
