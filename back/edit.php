@@ -12,15 +12,15 @@ include("../classes/QuestionSelectNumber.php");
 
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
 if(isset($_GET['id'])) {
-
     $dotaznik = Db::queryOne('SELECT * FROM ' . $tables['dotaznik'] . ' JOIN ' . $bebras['kategorie'] . ' ON id = kategorie WHERE dotaznik_id = ?', $_GET['id']);
     $dotaznik1 = Db::queryOne('SELECT * FROM ' . $tables['dotaznik'] . ' WHERE dotaznik_id = ?', $_GET['id']);
+    $dotaznikId = $dotaznik['dotaznik_id'];
     if($dotaznik['stav'] != 0) {
         header('location: admin.php');
         exit;
     }
     $kategorie = Db::queryAll('SELECT id, nazev FROM ' . $bebras['kategorie'] . ' WHERE id NOT in (?)', $dotaznik['kategorie']);
-    $otazky = Db::queryAll('SELECT * FROM '. $tables['otazky'] . ' WHERE dotaznik_id = ?', $dotaznik['dotaznik_id']);
+    $otazky = Db::queryAll('SELECT * FROM '. $tables['otazky'] . ' WHERE dotaznik_id = ? ORDER BY otazky_id', $dotaznik['dotaznik_id']);
     if($_POST) {
 
         if(isset($_POST['otazka'])) {
@@ -33,6 +33,8 @@ if(isset($_GET['id'])) {
             Db::query('UPDATE ' . $tables['dotaznik'] . ' SET nazev = ?, kategorie = ?, doplneni = ?, rok = ? WHERE dotaznik_id = ?', $form['nazev'], $form['kategorie'], $form['doplneni'], $form['rok'], $_GET['id']);
             $dotaznik = $dotaznik['dotaznik_id'];
             $pocet = count($_POST['otazka']);
+            Db::query('DELETE FROM ' . $tables['otazky'] . ' WHERE dotaznik_id = ?', $dotaznikId);
+
             for ($i = 0; $i < $pocet; $i++) {
                 $idOtazky = $_POST['id'][$i];
                 $otazka = $_POST['otazka'][$i];
@@ -56,7 +58,6 @@ if(isset($_GET['id'])) {
                     'cancel' => $cancel
                 );
 
-                $q = Db::query('DELETE FROM ' . $tables['otazky'] . ' WHERE otazky_id = ?', $idOtazky);
                 Db::insert($tables['otazky'], $otazka);
 
                 $a = $i+1; //možnost index
@@ -64,11 +65,20 @@ if(isset($_GET['id'])) {
 
                 if(is_array($moznosti) and $moznosti[0] != 'NULL') {
                     $id = Db::getLastId($tables['otazky']);
+                    $typ = Db::queryOne('SELECT * FROM otazky WHERE otazky_id = ?', $id)['typ'];
+                    if($typ == '1' || $typ == '2' || $typ == '3' || $typ == '4' ) {
+                        $id = $id;
+                    }
+                    else {
+                        $id = $id - 1;
+                    }
+                    echo $id;
                     foreach ($moznosti as $m) {
                         $moznost = array(
                             'moznost' => $m,
                             'otazky_id' => $id
                         );
+
                         Db::query('DELETE FROM moznosti WHERE otazky_id = ?', $idOtazky);
                         Db::insert($tables['moznosti'], $moznost);
                     }
@@ -217,7 +227,7 @@ if(isset($_GET['id'])) {
                                     <input type="text" value="<?= $moznost['moznost'] ?>" class="form-control moznosti" placeholder="Odpověď" name="moznost[moznost-<?= $pocet; ?>][]" />
                                 </div>
                                 <div class="col-lg-1">
-                                    <i class="fa fa-close col-lg-1 text-center deleteMoznost" data="moznost[moznost-<?= $pocet; ?>][]" onclick="if(abbleToDelete($(this, 5)) )$(this).parent().parent().remove()"></i>
+                                    <i class="fa fa-close col-lg-1 text-center deleteMoznost" data="moznost[moznost-<?= $pocet; ?>][]" onclick="$(this).parent().parent().remove()"></i>
                                     <i class="fa fa-plus-square add" style="font-size:25px;" data="moznost[moznost-<?= $pocet; ?>][]" onclick="$(this).parent().parent().after(addMoznost($(this)))"></i>
                                 </div>
                                     <?php else : ?>
@@ -231,8 +241,17 @@ if(isset($_GET['id'])) {
 
 
                                 <?php endif; ?>
+
                             </div>
                             <?php endforeach; ?>
+                            <div clas="row">
+                            <div class="col-lg-11">
+                            </div>
+                            <div class="col-lg-1">
+                                <i class="fa fa-close col-lg-1 text-center deleteMoznost" data="moznost[moznost-<?= $pocet; ?>][]" onclick="if(abbleToDelete($(this, 5)) )$(this).parent().parent().remove()"></i>
+                                <i class="fa fa-plus-square add" style="font-size:25px;" data="moznost[moznost-<?= $pocet; ?>][]" onclick="$(this).parent().parent().after(addMoznost($(this)))"></i>
+                            </div>
+                            </div>
                         <input type="hidden" name="lable1[]" value="NULL" />
                         <input type="hidden" name="lable2[]" value="NULL" />
                         <input type="hidden" name="cancel[]" value="NULL" />
@@ -549,8 +568,10 @@ if(isset($_GET['id'])) {
                         <option value="<?= date('Y') - 2; ?>"><?= date('Y') - 2 ?></option>
                     </select>
                     <?php if(count($kategorie) > 0) : ?>
+
                         <span>Kategorie</span>
                         <select name="kategorie2">
+                            <option value="<?= $dotaznik['kategorie'] ?>"><?= $dotaznik['nazev'] ?></option>
                             <?php foreach ($kategorie as $k) : ?>
                                 <option value="<?= $k['id'] ?>"><?= $k['nazev'] ?></option>
                             <?php endforeach; ?>

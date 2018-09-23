@@ -15,5 +15,9 @@ if($_POST) {
             echo "<li class=\"data-db\">". $o['nazev'] ."</li>";
         }
     }
+    if(isset($_POST['id'])) {
+        $d = Db::query('DELETE FROM ' . $tables['otazky'] . ' WHERE otazky_id = ? ', $_POST['id']);
+        echo $d;
+    }
 }
 ?>

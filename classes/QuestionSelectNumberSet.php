@@ -37,7 +37,7 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
     public function render()
     {
         $hb = new HtmlBuilder();
-            $hb->openElement("table");
+            $hb->openElement("table", array("style" => 'margin: auto'));
             $hb->openElement("tr");
                 $hb->openElement("td", array('align' => 'center'));
                 $hb->closeElement("td");
@@ -78,6 +78,7 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
             $hb->closeElement("tr");
         endfor;
         $hb->closeElement("table");
+        $hb->addElemnet("hr");
         return $this->renderTop() . $hb->render() . $this->renderBottom();
     }
 

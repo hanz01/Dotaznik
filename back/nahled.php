@@ -39,13 +39,19 @@ if(isset($_GET['id'])) {
     <script type="text/javascript"></script>
 </head>
 <body>
-    <div class="container">
-        <h2 class="text-center">Náhled dotazníku</h2>
+
+    <header class="container">
+        <img src="../images/header.png" alt="Hlavní logo soutěže" />
+    </header>
+    <main class="container">
         <?= $Questionnaire->renderHeader(); ?>
         <form method="post">
-        <?=            $Questionnaire->render();       ?>
+            <?=            $Questionnaire->render();       ?>
         </form>
-    </div>
+    </main>
+    <footer class="container">
+        <p>&copy; Petr Hanzal 2018</p>
+    </footer>
 </body>
 </html>
 

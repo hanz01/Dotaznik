@@ -41,11 +41,11 @@ class QuestionSelectNumber extends QuestionSelect
         $hb = new HtmlBuilder();
         $type = "radio";
         $i = $this->minValue;
-        $hb->openElement("table");
-        $hb->openElement("td", array('colspan' => round($this->maxValue / 2)));
+        $hb->openElement("table", array('style' => 'margin: auto'));
+        $hb->openElement("td", array('colspan' => round($this->maxValue / 2), 'align' => 'left'));
         $hb->addValue($this->label1);
         $hb->closeElement("td");
-        $hb->openElement("td", array('colspan' => round($this->maxValue / 2)));
+        $hb->openElement("td", array('colspan' => round($this->maxValue / 2), 'align' => 'right'));
         $hb->addValue($this->label2);
         $hb->closeElement("td");
         if($this->cancel != "NULL") {
@@ -60,7 +60,7 @@ class QuestionSelectNumber extends QuestionSelect
             if (count($this->posted) == 1 && ($this->posted == $v)) {
                 $args["checked"] = "checked";
             }
-            $hb->openElement("td");
+            $hb->openElement("td", array('align' => 'center'));
             $hb->addElemnet("input", $args);
             $hb->closeElement();
         }
@@ -70,7 +70,7 @@ class QuestionSelectNumber extends QuestionSelect
         $hb->openElement("tr");
         for ($i = $this->minValue; $i <= $this->maxValue; $i++)
         {
-            $hb->openElement("td");
+            $hb->openElement("td", array('align' => 'center'));
             $hb->addValue($i);
             $hb->closeElement("td");
         }

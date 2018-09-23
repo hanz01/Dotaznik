@@ -35,7 +35,7 @@ class Questionnaire
 
 
     private function initQuestions() {
-        $moznosti = Db::queryAll('SELECT * FROM otazky WHERE dotaznik_id = ?', $this->id);
+        $moznosti = Db::queryAll('SELECT * FROM otazky WHERE dotaznik_id = ? ORDER BY otazky_id', $this->id);
         if(count($moznosti) == 0)
             return false;
         $i = 1;

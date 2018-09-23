@@ -48,8 +48,9 @@ if(isset($_GET['id']) && isset($_GET['respondent'])) {
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>Your Website</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <link rel="stylesheet" type="text/css" href="../css/apps.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" type="text/css" href="css/apps.css" />
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -61,13 +62,18 @@ if(isset($_GET['id']) && isset($_GET['respondent'])) {
         <script type="text/javascript"></script>
     </head>
     <body>
-    <div class="container">
-        <h2 class="text-center">Náhled dotazníku</h2>
+    <header class="container">
+        <img src="images/header.png" alt="Hlavní logo soutěže" />
+    </header>
+    <main class="container">
         <?= $Questionnaire->renderHeader(); ?>
         <form method="post">
             <input type="hidden" name="respondent" value="<?= $_GET['respondent'] ?>" />
             <?=            $Questionnaire->render();       ?>
         </form>
-    </div>
+    </main>
+    <footer class="container">
+        <p>&copy; Petr Hanzal 2018</p>
+    </footer>
     </body>
     </html>

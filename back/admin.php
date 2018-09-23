@@ -4,7 +4,6 @@ include("../classes/Db.php");
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
 $data = Db::queryAll('SELECT * FROM ' . $tables['dotaznik'] . ' JOIN ' . $bebras['kategorie'] . ' ON id = kategorie');
 $data1 = Db::queryAll('SELECT * FROM ' . $tables['dotaznik']);
-
 if(isset($_GET['spustit']) && $_GET['spustit'] > 0) {
     $q = Db::query('UPDATE ' . $tables['dotaznik'] . ' SET stav = 1 WHERE dotaznik_id = ?', $_GET['spustit']);
     if($q) {
@@ -45,7 +44,10 @@ if(isset($_GET['delete']) && $_GET['delete'] > 0) {
     <script type="text/javascript"></script>
 </head>
 <body>
-    <div class="container">
+    <header class="container">
+        <img src="../images/header.png" alt="Hlavní logo soutěže" />
+    </header>
+    <main class="container">
         <?php
         if(isset($_GET['vytvoreno'])) {
             echo '<p>Dotazník byl vytvořen</p>';
@@ -91,7 +93,10 @@ if(isset($_GET['delete']) && $_GET['delete'] > 0) {
         <?php else : ?>
         <h3 class="text-center">Nebyli nalezeny žádné dotazníky</h3>
         <?php endif; ?>
-    </div>
+    </main>
+    <footer class="container">
+        <p>&copy; Petr Hanzal 2018</p>
+    </footer>
 </body>
 </html>
 
