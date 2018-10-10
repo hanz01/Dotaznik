@@ -17,9 +17,9 @@ class QuestionSelectNumber extends QuestionSelect
 
     protected $cancel;
 
-    public function __construct($qustion, $note, $name, $minValue, $maxValue, $label1, $label2, $cancel = null, $rqired = true)
+    public function __construct($index, $qustion, $note, $name, $minValue, $maxValue, $label1, $label2, $cancel = null, $rqired = true)
     {
-        parent::__construct1($qustion, $note, $name, 1, $rqired);
+        parent::__construct1($index, $qustion, $note, $name, 1, $rqired);
         $this->minValue = $minValue;
         $this->maxValue = $maxValue;
         $this->label1 = $label1;
@@ -40,19 +40,25 @@ class QuestionSelectNumber extends QuestionSelect
     {
         $hb = new HtmlBuilder();
         $type = "radio";
+        //první řádekl
         $i = $this->minValue;
-        $hb->openElement("table", array('style' => 'margin: auto'));
-        $hb->openElement("td", array('colspan' => round($this->maxValue / 2), 'align' => 'left'));
+        $hb->openElement("table", array('border' => '0', 'style' => 'max-width: 750px'));
+        $hb->openElement("td", array('align' => 'right', 'style' => 'padding-right: 1rem'));
         $hb->addValue($this->label1);
         $hb->closeElement("td");
-        $hb->openElement("td", array('colspan' => round($this->maxValue / 2), 'align' => 'right'));
+        for($i=0; $i<count($this->oppnions)-3; $i++) {
+            $hb->openElement("td");
+            $hb->closeElement("td");
+        }
+         $hb->openElement("td", array('align' => 'left', 'style' => 'padding-left: 1rem'));
         $hb->addValue($this->label2);
         $hb->closeElement("td");
         if($this->cancel != "NULL") {
             $hb->openElement("td");
-            $hb->addValue($this->cancel);
             $hb->closeElement("td");
         }
+        $hb->closeElement("tr");
+        //druhý řádek
         $hb->openElement("tr");
         foreach ($this->oppnions as $k => $v) {
             $name = $this->name;
@@ -64,9 +70,9 @@ class QuestionSelectNumber extends QuestionSelect
             $hb->addElemnet("input", $args);
             $hb->closeElement();
         }
+
         $hb->closeElement("tr");
-        $hb->openElement("tr");
-        $hb->closeElement("tr");
+        //čísla
         $hb->openElement("tr");
         for ($i = $this->minValue; $i <= $this->maxValue; $i++)
         {
@@ -74,12 +80,13 @@ class QuestionSelectNumber extends QuestionSelect
             $hb->addValue($i);
             $hb->closeElement("td");
         }
-
-        if(!$this->valid) {
-            $hb->openElement("p");
-            $hb->addValue($this->message);
-            $hb->closeElement();
+        if($this->cancel != "NULL") {
+            $hb->openElement("td");
+            $hb->addValue($this->cancel);
+            $hb->closeElement("td");
         }
+
+
         $hb->closeElement('tr');
         $hb->closeElement('table');
         $hb->addElemnet("hr");

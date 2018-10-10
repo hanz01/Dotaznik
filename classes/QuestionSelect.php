@@ -16,17 +16,17 @@ class QuestionSelect extends  Question
 
     protected $message;
 
-    public function __construct($qustion, $note, $name, $max, $id, $rqired = true)
+    public function __construct($index, $qustion, $note, $name, $max, $id, $rqired = true)
     {
-        parent::__construct($qustion, $note, $name, $rqired);
+        parent::__construct($index, $qustion, $note, $name, $rqired);
         $this->max = $max;
         $this->id = $id;
         $this->initOppnions();
     }
 
-    public function __construct1($qustion, $note, $name, $max, $rqired = true)
+    public function __construct1($index, $qustion, $note, $name, $max, $rqired = true)
     {
-        parent::__construct($qustion, $note, $name, $rqired);
+        parent::__construct($index, $qustion, $note, $name, $rqired);
         $this->max = $max;
     }
     private function initOppnions() {
@@ -84,23 +84,21 @@ class QuestionSelect extends  Question
             $hb->addElemnet("br");
             $i++;
         }
-        if(!$this->valid) {
-            $hb->openElement("p");
-            $hb->addValue($this->message);
-            $hb->closeElement();
-        }
+
         $hb->addElemnet("hr");
         return $this->renderTop() . $hb->render() . $this->renderBottom();
     }
 
     public function validate()
     {
+
         if($this->reqired) {
-            if(count($this->posted) <= $this->max) {
+            if(count($this->posted) > 0 && count($this->posted) <= $this->max) {
+
                 return true;
             }
             else {
-                $this->message = "Vyberte maximálně: " . $this->max;
+                $this->message = "Vyberte maximálně: " . $this->max . ' možnosti';
                 $this->setValid(false);
                 return false;
             }

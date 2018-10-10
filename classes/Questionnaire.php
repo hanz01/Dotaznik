@@ -20,6 +20,7 @@ class Questionnaire
     public function __construct($header, $info, $category, $year, $id)
     {
         $this->header = $header;
+        $this->info = $info;
         $this->category = $category;
         $this->year = $year;
         $this->posted = isset($_POST['form-name']) && $_POST['form-name'] == $this->header;
@@ -42,34 +43,34 @@ class Questionnaire
         foreach($moznosti as $m) {
             switch($m['typ']) {
                 case 'kratka' :
-                    $this->questions[] = new QuestionText($m['otazka'], $m['doplneni'], 'ot-'. $i);
+                    $this->questions[] = new QuestionText($i, $m['otazka'], $m['doplneni'], 'ot-'. $i);
                     break;
                 case 'dlouha' :
-                    $this->questions[] = new QuestionTextLong($m['otazka'], $m['doplneni'], 'ot-'. $i);
+                    $this->questions[] = new QuestionTextLong($i, $m['otazka'], $m['doplneni'], 'ot-'. $i);
                     break;
                 case '1':
-                    $this->questions[] = new QuestionSelect($m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id']);
+                    $this->questions[] = new QuestionSelect($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id'], true);
                     break;
                 case ($m['typ'] == '2' || $m['typ'] == '3' || $m['typ'] == '4') :
-                    $this->questions[] = new QuestionSelect($m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id']);
+                    $this->questions[] = new QuestionSelect($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id'], true);
                     break;
                 case ($m['typ'] == 'sada2' || $m['typ'] == 'sada1') :
                     if($m['typ'] == 'sada1') {
-                        $min = 0;
-                        $max = 5;
+                        $min = 1;
+                        $max = 6;
                     }
                     else {
                         $min = 1;
                         $max = 5;
                     }
-                    $this->questions[] = new QuestionSelectNumberSet($m['otazka'], $m['doplneni'], 'ot-'. $i, $min, $max, $m['label1'], $m['label2'], $this->category, $m['cancel']);
+                    $this->questions[] = new QuestionSelectNumberSet($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $min, $max, $m['label1'], $m['label2'], $this->category, $m['cancel'], true);
 
                     break;
                 default :
                     $cisla = explode("-", $m['typ']);
                     $min = $cisla[0];
                     $max = $cisla[1];
-                    $this->questions[] = new QuestionSelectNumber($m['otazka'], $m['doplneni'], 'ot-'. $i, $min, $max, $m['label1'], $m['label2'], $m['cancel']);
+                    $this->questions[] = new QuestionSelectNumber($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $min, $max, $m['label1'], $m['label2'], $m['cancel'], true);
                     break;
             }
             $this->questions[$i-1]->setId($m['otazky_id']);
@@ -90,6 +91,9 @@ class Questionnaire
         $hb->openElement("h1");
         $hb->addValue($this->header);
         $hb->closeElement();
+        $hb->openElement("p");
+        $hb->addValue($this->info);
+        $hb->closeElement();
         return $hb->render();
     }
 
@@ -102,7 +106,9 @@ class Questionnaire
 
     private function renderBottom() {
         $hb = new HtmlBuilder();
-        $hb->addElemnet("input", array("type" => "submit", "value" => "Odeslat dotazník"));
+        $hb->addElemnet('div', array('class' => 'text-ceter submit'));
+        $hb->addElemnet("input", array("type" => "submit", "value" => "Odeslat dotazník", "class" => "btn btn-danger", 'style' => 'margin: 0 auto'));
+        $hb->closeElement();
         return $hb->render();
     }
 
@@ -117,8 +123,9 @@ class Questionnaire
     }
 
     public function validateForm() {
+
         $valid = true;
-        $pocetSada = 0;
+        $pocetSada = 1;
         foreach($this->questions as $k => $v) {
             $name = $this->questions[$k]->getName();
             if($this->questions[$k] instanceof QuestionText) {
@@ -131,6 +138,11 @@ class Questionnaire
                         $valid = false;
                     }
                 }
+                else {
+                    $this->questions[$k]->setValid(false);
+                    $this->questions[$k]->setMessage("Vyberte prosím minimálně jednu možnost");
+                    $valid = false;
+                }
                 if($this->questions[$k] instanceof QuestionSelectNumberSet) {
                        $pocet = count($this->questions[$k]->getQuestions());
                        @$this->questions[$k]->setPosted($_POST[$name . "-" . $pocetSada], $name . "-" . $pocetSada);
@@ -138,13 +150,18 @@ class Questionnaire
                            if(!empty($_POST[$name . "-" . $i]))
                                 $data[] = $_POST[$name . "-" . $i];
                            else
-                               $data[] = 'x';
+                               $data[] = '-1';
                            $this->questions[$k]->setPosted($data);
                        }
                        unset($data);
+
+                       $valid = $this->questions[$k]->validate();
+
+
                 }
 
             }
+
         }
         return $valid;
 
@@ -154,7 +171,7 @@ class Questionnaire
         $data = array();
         foreach ($this->questions as $item) {
             if(is_array($item->getData()))
-                $temp = 'NULL';
+                $temp = '-1';
             else
                 $temp = $item->getData();
             $data[$item->getId()] = $temp;

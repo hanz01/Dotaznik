@@ -1,10 +1,21 @@
 <?php
+session_start();
 include("../config.php");
 include("../classes/Db.php");
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
-
+if(empty($_SESSION['user'])) {
+    header('location: login.php');
+    exit();
+}
 $kategorie = Db::queryAll('SELECT id, nazev FROM ' . $bebras['kategorie']);
 if($_POST) {
+    $poradi = 1;
+    $moznosti = array();
+    foreach($_POST['moznost'] as $moznost) {
+        $moznosti['moznost-'.$poradi] = $moznost;
+        $poradi++;
+    }
+    $_POST['moznost'] = $moznosti;
     if(isset($_POST['otazka'])) {
         $form = array(
             'nazev' => $_POST['nazev'],
@@ -62,7 +73,7 @@ if($_POST) {
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Your Website</title>
+    <title>Bobřík informatiky - online dotazníky</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../css/apps.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -78,11 +89,33 @@ if($_POST) {
 
     <script type="text/javascript" src="editor.js">   </script>
 </head>
-<body  class="bg-primary">
+<body>
+<header class="container">
+    <img src="../images/header.png" alt="Hlavní logo soutěže" />
+</header>
+<main class="container">
+    <nav class="navbar navbar-expand-lg">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="admin.php">Administrace</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="create.php">Vytvořit nový dotazník</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="register.php">Přidat uživatele</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 <p id="pocet" style="display: none">0</p>
 <form method="post">
-    <header class="bg-danger color-white">
-        <h1>Nový dotazník</h1>
+    <header>
+        <h2>Nový dotazník</h2>
         <div class="container ">
                 <input type="text" name="nazev" class="form-control" placeholder="Název formuláře" /><br />
                 <textarea name="informace" class="form-control" placeholder="Informace pro doplnění" ></textarea><br />
@@ -99,47 +132,50 @@ if($_POST) {
                     </select>
                 </div>
              </div>
-            <br />
             <?php endif; ?>
+                <br />
                 <select name="rok" class="form-control">
                     <option vlaue="<?= date('Y') ?>"><?= date('Y') ?></option>
                     <option vlaue="<?= date('Y') + 1 ?>"><?= date('Y') + 1 ?></option>
                 </select>
-
         </div>
-        <h2>Otázky</h2>
+        <h2 class="text-center">Otázky</h2>
     </header>
     <div class="clearfix"></div>
-    <main class="bg-primary">
         <br />
+        <div class="hide" style="display: none">
         <div class="container sortable" id="dotaznik"></div>
-        <nav class="container bg-danger">
-            <br />
-            <div class="row">
-                <div class="col-lg-6 text-center">
-                    <select class="form-control" name="uestionType">
-                        <option value="tvorena">Tvořená odpověď</option>
-                        <option value="vyber">Výběr odpovědi</option>
-                        <option value="skala">Škála</option>
-                        <option value="sada">Škála sada</option>
-                    </select>
+            <div class="container">
+                <br />
+                <div class="row container text-center">
+                    <div class="col-lg-6 text-center">
+                        <select class="form-control" name="uestionType">
+                            <option value="tvorena">Tvořená odpověď</option>
+                            <option value="vyber">Výběr odpovědi</option>
+                            <option value="skala">Škála</option>
+                            <option value="sada">Škála sada</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-6">
+                        <input id="add" type="button" class="btn btn-large btn-primary" value="Přidat otázku" />
+                    </div>
                 </div>
-                <div class="col-lg-6">
-                    <input id="add" type="button" class="btn btn-large btn-primary" value="Přidat otázku" />
-                </div>
-            </div>
-            <br />
-        </nav><br />
+                <br />
+            </div><br />
         <input type="submit" id="save" value="Uložit dotazník" class="btn btn-danger btn-lg" />
-    </main>
+        </div>
 
 </form>
-
+</main>
+<footer class="container">
+    <p>&copy; Petr Hanzal 2018</p>
+</footer>
 <template id="short">
     <div id="" class="s1 bg-light jumbotron">
         <div class="row">
             <div class="col-lg-10 col-md-10 col-sm-12">
                 <h3>Tvořená odpověď</h3>
+                <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
             </div>
             <div class="col-lg-2 col-md-2 col-sm-12 text-right">
                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
@@ -174,6 +210,7 @@ if($_POST) {
         <div class="row">
             <div class="col-lg-10 col-md-10 col-sm-12">
                 <h3>Otázka s možností výběru</h3>
+                <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
             </div>
             <div class="col-lg-2 col-md-2 col-sm-12 text-right">
                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
@@ -217,6 +254,7 @@ if($_POST) {
         <div class="row">
             <div class="col-lg-10 col-md-10 col-sm-12">
                 <h3>Škála</h3>
+                <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
             </div>
             <div class="col-lg-2 col-md-2 col-sm-12 text-right">
                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
@@ -231,7 +269,7 @@ if($_POST) {
             </div>
             <div class="col-lg-10 col-md-12">
                 <select name="typ[]" class="form-control text-center">
-                    <option value="0-5">0 - 5</option>
+                    <option value="1-6">1 - 6</option>
                     <option value="1-5">1 - 5</option>
                 </select>
                 <input type="hidden" class="moznosti" name="moznost[][]" value="NULL" />
@@ -246,6 +284,7 @@ if($_POST) {
                 <input type="text" name="lable2[]" class="form-control" placeholder="Štítek pro poslední číslo"/>
             </div>
         </div>
+
             Vzít odpověď zpět:
             <input type="checkbox" name="cancel[]" value="Nechci odpovídat" />
 
@@ -259,11 +298,14 @@ if($_POST) {
         <div class="row">
             <div class="col-lg-10 col-md-10 col-sm-12">
                 <h3>Škála sada</h3>
+                <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
             </div>
             <div class="col-lg-2 col-md-2 col-sm-12 text-right">
                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
             </div>
         </div>
+        <p>Otázka vygeneruje automaticky sadu škálových otázek se všemi soutěžními otázkami ze zvolené kategorie.</p>
+
         <input type="text" name="otazka[]" class="form-control" placeholder="Zadejte text otázky" />
         <br />
         <input type="text" name="poznamka[]" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
@@ -282,7 +324,7 @@ if($_POST) {
             </div>
             <div class="col-lg-10 col-md-12">
                 <select name="typ[]" class="form-control text-center">
-                    <option value="sada1">0 - 5</option>
+                    <option value="sada1">1 - 6</option>
                     <option value="sada2">1 - 5</option>
                 </select>
                 <input type="hidden" class="moznosti" name="moznost[][]" value="NULL" />
@@ -291,6 +333,9 @@ if($_POST) {
         </div>
         Vzít odpověď zpět:
         <input type="checkbox" name="cancel[]" value="Nechci odpovídat" />
+
+        <input type="button" class="btn btn-secondary addQuestions"  value="Přidat otázky!" />
+        <textarea name="otazky" class="otazky"></textarea>
 
     </div>
 

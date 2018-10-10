@@ -14,7 +14,7 @@ $soutezniOtazky = Db::QueryAll('SELECT nazev FROM ' . $bebras['otazky'] . ' WHER
 
 $pocetRespondentu = Db::queryOne('SELECT count(*) FROM (SELECT count(*) FROM `odpovedi` WHERE dotaznik_id = ? GROUP by respondent ) as g', $_GET['id'])['count(*)'];
 
-$odpovedi = Db::queryAll('SELECT respondent, typ, `odpovedi`.otazka, odpoved FROM `odpovedi` JOIN otazky ON `odpovedi`.dotaznik_id = 12 AND `odpovedi`.otazka = otazky_id');
+$odpovedi = Db::queryAll('SELECT respondent, typ, `odpovedi`.otazka, odpoved FROM `odpovedi` JOIN otazky ON `odpovedi`.dotaznik_id = ? AND `odpovedi`.otazka = otazky_id', $_GET['id']);
 $odpoved = array();
 
 $pocetOtazek = count($otazkyArray);
@@ -81,7 +81,7 @@ $newExcelWriter = new PHPExcel_Writer_Excel2007($xls);
 $newExcelWriter->save('./vysledky.xlsx');
 
 header('location: vysledky.xlsx');
-
+exit();
 
 ?>
 <!DOCTYPE HTML>
@@ -102,6 +102,9 @@ header('location: vysledky.xlsx');
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text-javascript">
+        Window.close();
+    </script>
 </head>
 <body>
 <header class="container">

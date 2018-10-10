@@ -9,7 +9,11 @@ include("../classes/QuestionTextLong.php");
 include("../classes/QuestionSelect.php");
 include("../classes/QuestionSelectNumber.php");
 include("../classes/QuestionSelectNumberSet.php");
-
+session_start();
+if(empty($_SESSION['user'])) {
+    header('location: login.php');
+    exit();
+}
 
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
 if(isset($_GET['id'])) {
@@ -24,7 +28,7 @@ if(isset($_GET['id'])) {
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Your Website</title>
+    <title>Bobřík informatiky - online dotazníky</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../css/apps.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -44,6 +48,25 @@ if(isset($_GET['id'])) {
         <img src="../images/header.png" alt="Hlavní logo soutěže" />
     </header>
     <main class="container">
+        <nav class="navbar navbar-expand-lg">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.php">Administrace</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="create.php">Vytvořit nový dotazník</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.php">Přidat uživatele</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <h2 class="text-center">Náhled dotazníku</h2>
         <?= $Questionnaire->renderHeader(); ?>
         <form method="post">
             <?=            $Questionnaire->render();       ?>

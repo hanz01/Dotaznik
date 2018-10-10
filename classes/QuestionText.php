@@ -12,9 +12,9 @@ class QuestionText extends Question
 
     protected $value;
 
-    public function __construct($qustion, $note, $name, $reqired = false, $value = null)
+    public function __construct($index, $qustion, $note, $name, $reqired = false, $value = null)
     {
-        parent::__construct($qustion, $note, $name, $reqired);
+        parent::__construct($index, $qustion, $note, $name, $reqired);
     }
 
     public function setValue($value) {
@@ -31,7 +31,7 @@ class QuestionText extends Question
 
     public function render()
     {
-        $params = array("type" => "text","name" => $this->name,  "placeholder" => self::PLACEHOLDER);
+        $params = array("type" => "text","name" => $this->name,  "placeholder" => self::PLACEHOLDER, "class" => 'form-control');
         if($this->reqired)
             $params["required"] = "required";
         if(!$this->valid)

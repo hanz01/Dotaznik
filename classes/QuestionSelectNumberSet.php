@@ -14,9 +14,9 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
     private $questions = array();
 
 
-    public function __construct($qustion, $note, $name, $minValue, $maxValue, $label1, $label2, $category, $cancel, $rqired = true)
+    public function __construct($index, $qustion, $note, $name, $minValue, $maxValue, $label1, $label2, $category, $cancel, $rqired = true)
     {
-        parent::__construct($qustion, $note, $name, $minValue, $maxValue, $label1, $label2, $cancel);
+        parent::__construct($index, $qustion, $note, $name, $minValue, $maxValue, $label1, $label2, $cancel);
         $this->category = $category;
         $this->initQuetions();
 
@@ -37,7 +37,29 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
     public function render()
     {
         $hb = new HtmlBuilder();
-            $hb->openElement("table", array("style" => 'margin: auto'));
+            $hb->openElement("table", array('style' => ' max-width: 755px; margin-left: 1rem'));
+            //první řádek
+            $hb->openElement('tr');
+                $hb->openElement('td');
+                $hb->addValue('Otázky');
+                $hb->closeElement('td');
+                $hb->openElement("td", array('align' => 'right', 'style' => 'padding-right: 1rem'));
+                $hb->addValue($this->label1);
+                $hb->closeElement("td");
+                for($i=0; $i<$this->maxValue-2; $i++) {
+                    $hb->openElement('td');
+                    $hb->closeElement('td');
+                }
+                $hb->openElement("td", array('align' => 'left', 'style' => 'padding-left: 1rem'));
+                $hb->addValue($this->label2);
+                $hb->closeElement("td");
+                if($this->cancel != "NULL") {
+                    $hb->openElement("td");
+                    $hb->closeElement("td");
+                }
+                //řádek s čísly
+            $hb->closeElement("tr");
+
             $hb->openElement("tr");
                 $hb->openElement("td", array('align' => 'center'));
                 $hb->closeElement("td");
@@ -51,7 +73,12 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
                     $hb->addValue("Nepamatuji se");
                     $hb->closeElement("td");
                 }
+                if(!$this->valid) {
+                    $hb->openElement('td');
+                    $hb->closeElement('td');
+                }
             $hb->closeElement("tr");
+                //otázky
         for($radek=0; $radek<count($this->questions); $radek++) :
             $hb->openElement("tr");
                 $hb->openElement("td", array('align' => 'left'));
@@ -75,11 +102,29 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
                     $hb->addElemnet('input', $args1);
                     $hb->closeElement("td");
                 }
+                if(!$this->valid && $this->posted[$radek] == '-1') {
+                    $hb->openElement('td');
+                    $hb->openElement('i', array('class' => 'fa fa-times', 'aria-hidden' => 'true', 'style' => 'color: red', 'title' => 'Vyberte nějakou možnost z toho řádku'));
+                    $hb->closeElement('td');
+                }
             $hb->closeElement("tr");
         endfor;
         $hb->closeElement("table");
         $hb->addElemnet("hr");
         return $this->renderTop() . $hb->render() . $this->renderBottom();
+    }
+
+    public function validate()
+    {
+        if(!in_array('-1', $this->posted) && count($this->posted ) == count($this->questions)) {
+            return true;
+        }
+        else {
+            $this->message = 'Vyberte prosím v každém řádku jednu možnost';
+            $this->setValid(false);
+
+            return false;
+        }
     }
 
     public function getData()

@@ -16,7 +16,8 @@ $tables = array(
     'dotaznik' => 'dotaznik',
     'otazky' => 'otazky',
     'moznosti' => 'moznosti',
-    'odpovedi' => 'odpovedi'
+    'odpovedi' => 'odpovedi',
+    'users' => 'users'
 );
 
 $bebras = array(
@@ -27,7 +28,7 @@ $bebras = array(
 $typy = array(
       'kratka' => 'Krátká odpověď',
       'dlouha' => 'Dlouhá odpověď',
-      'sada1' => '0-5',
+      'sada1' => '1-6',
       'sada2' => '1-5'
 );
 

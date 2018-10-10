@@ -1,4 +1,19 @@
 <?php
+session_start();
+if(!empty($_SESSION['zprava']))  {
+    $zprava = $_SESSION['zprava'];
+    unset($_SESSION['zprava']);
+}
+
+if(empty($_SESSION['user'])) {
+    header('location: login.php');
+    exit();
+}
+if(isset($_GET['logout'])) {
+    session_destroy();
+    header('location: login.php');
+    exit();
+}
 include("../config.php");
 include("../classes/Db.php");
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
@@ -29,7 +44,7 @@ if(isset($_GET['delete']) && $_GET['delete'] > 0) {
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Your Website</title>
+    <title>Bobřík informatiky - online dotazníky</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../css/apps.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -48,13 +63,40 @@ if(isset($_GET['delete']) && $_GET['delete'] > 0) {
         <img src="../images/header.png" alt="Hlavní logo soutěže" />
     </header>
     <main class="container">
+        <nav class="navbar navbar-expand-lg">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.php">Administrace</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="create.php">Vytvořit nový dotazník</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.php">Přidat uživatele</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
         <?php
         if(isset($_GET['vytvoreno'])) {
-            echo '<p>Dotazník byl vytvořen</p>';
+            echo '<h4 class="text-center text-danger">Dotazník byl vytvořen</h4>';
         }
         ?>
+        <?php if(isset($zprava)) : ?>
+        <h4 class="text-center text-danger"><?= $zprava ?></h4>
+        <?php endif; ?>
+
+        <br />
+        <p class=" text-right">
+            <span>Přihlášený uživatel: <?= $_SESSION['user'] ?></span><br />
+            <a href="?logout" class="btn btn-danger">Odhlásit se!</a>
+        </p>
+
         <h2 class="text-center">Seznam dotazníků</h2>
-        <h4><a href="create.php">Vytvořit nový</a></h4>
         <?php if(count($data) > 0) : ?>
             <table class="table">
                 <tr>
@@ -82,7 +124,7 @@ if(isset($_GET['delete']) && $_GET['delete'] > 0) {
                         }
 
                         else {
-                            echo 'Ukončený <a href="?vysledek=' . $d['dotaznik_id'] . '">výsledky <a href="?delete=' . $d['dotaznik_id'] . '">Smazat</a></a>';
+                            echo 'Ukončený <a target="blank" href="vysledky.php?id=' . $d['dotaznik_id'] . '">výsledky <a href="?delete=' . $d['dotaznik_id'] . '">Smazat</a></a><br />';
                             echo("Počet respondentů: " . $pocet['count(*)']);
                         }
                             ?>

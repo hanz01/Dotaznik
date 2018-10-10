@@ -6,6 +6,7 @@ body {
   line-height: 1.5;
   background: url('../images/page.jpeg');
   background-repeat: repeat;
+  font-size: 1.2em;
 }
 body.dragging, body.dragging * {
   cursor: move !important;
@@ -20,6 +21,21 @@ header {
 main {
   background: #E5F2FB;
   padding-bottom: 3rem;
+  nav {
+    background: #39AFFE;
+    border-bottom: 2px solid black;
+    li {
+      a {
+        color: white;
+        text-decoration: underline;
+      }
+    }
+  }
+
+}
+.jumbotron {
+  background: #E5F2FB;
+
 }
 footer {
   background: #39AFFE;
@@ -36,53 +52,76 @@ h1 {
   text-align: center;
 }
 form {
-  text-align: center;
+  text-align: left;
   .question {
-      width: 75%;
-      max-width: 1250px;
-      margin: auto;
-      text-align: center;
+      margin: 0rem 2rem;
+      text-align: left;
       label, input, textarea {
-        font-size: 1.4em;
+        font-size: 1.1em;
+      }
+      p {
+        margin-left: 1rem;
       }
       input[type="text"] {
         display: block;
-        width: 750px;
-        margin: 2px auto;
+        max-width: 750px;
+        margin-left: 1rem;
       }
       textarea {
         display: block;
         height: 150px;
-        width: 755px;
-        margin: auto;
+        max-width: 755px;
+        margin-left: 1rem;
       }
       input[type="checkbox"] {
         width: 22px;
-        height: 22px;
-        margin-right: 10px;
-        margin-bottom: -12px;
+        height: 25px;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        cursor: pointer;
       }
       input[type="radio"] {
         width: 22px;
         height: 22px;
-        margin-right: 10px;
-        margin-bottom: -12px;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        cursor: pointer;
       }
-      input[type="submit"] {
-        font-size: 1.5em;
-      }
-      .label-select-number {
-        display: inline-block;
-        width: 22px;
-        margin: 5px;
-        margin-top: -5px;
-      }
-  }
 
+    input[type="submit"] {
+      color: black  !important;
+    }
+    label {
+      margin-top: -5px;
+    }
+    table {
+      bordr: 1px solid black;
+    }
+  }
+}
+.submit {
+  width: 100%;
+  text-align: center;
 }
 
+.card-header {
+  background: #39AFFE;
+  color: white;
+  a {
+    color: white;
+    font-size: 1.3em;
+  }
+}
 
 
 li {
   list-style-type: none !important;
 }
+
+
+
+
+
+
+
+

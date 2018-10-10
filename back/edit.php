@@ -8,8 +8,11 @@ include("../classes/QuestionText.php");
 include("../classes/QuestionTextLong.php");
 include("../classes/QuestionSelect.php");
 include("../classes/QuestionSelectNumber.php");
-
-
+session_start();
+if(empty($_SESSION['user'])) {
+    header('location: login.php');
+    exit();
+}
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
 if(isset($_GET['id'])) {
     $dotaznik = Db::queryOne('SELECT * FROM ' . $tables['dotaznik'] . ' JOIN ' . $bebras['kategorie'] . ' ON id = kategorie WHERE dotaznik_id = ?', $_GET['id']);
@@ -22,7 +25,13 @@ if(isset($_GET['id'])) {
     $kategorie = Db::queryAll('SELECT id, nazev FROM ' . $bebras['kategorie'] . ' WHERE id NOT in (?)', $dotaznik['kategorie']);
     $otazky = Db::queryAll('SELECT * FROM '. $tables['otazky'] . ' WHERE dotaznik_id = ? ORDER BY otazky_id', $dotaznik['dotaznik_id']);
     if($_POST) {
-
+        $poradi = 1;
+        $moznosti = array();
+        foreach($_POST['moznost'] as $moznost) {
+            $moznosti['moznost-'.$poradi] = $moznost;
+            $poradi++;
+        }
+        $_POST['moznost'] = $moznosti;
         if(isset($_POST['otazka'])) {
             $form = array(
                 'nazev' => $_POST['nazev'],
@@ -96,7 +105,7 @@ if(isset($_GET['id'])) {
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Your Website</title>
+    <title>Bobřík informatiky - online dotazníky</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="../css/apps.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -112,15 +121,37 @@ if(isset($_GET['id'])) {
 
     <script type="text/javascript" src="editor.js">   </script>
 </head>
-<body  class="bg-primary">
+<body>
+<header class="container">
+    <img src="../images/header.png" alt="Hlavní logo soutěže" />
+</header>
+<main class="container">
+    <nav class="navbar navbar-expand-lg">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="admin.php">Administrace</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="create.php">Vytvořit nový dotazník</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="register.php">Přidat uživatele</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 <p id="pocet" style="display: none">
     <?php
     echo count($otazky);
     ?>
 </p>
 <form method="post">
-    <header class="bg-danger color-white">
-        <h1>Nový dotazník</h1>
+    <header>
+        <h2>Úprava dotazníku</h2>
         <div class="container ">
             <input type="text" name="nazev" value="<?= $dotaznik1['nazev'] ?>" class="form-control" placeholder="Název formuláře" /><br />
             <textarea name="informace" class="form-control" placeholder="Informace pro doplnění" ><?= $dotaznik['doplneni'] ?></textarea><br />
@@ -150,7 +181,7 @@ if(isset($_GET['id'])) {
         <h2>Otázky</h2>
     </header>
     <div class="clearfix"></div>
-    <main class="bg-primary">
+    <section>
         <br />
         <div class="container sortable" id="dotaznik">
             <?php $pocet = 0; ?>
@@ -290,7 +321,7 @@ if(isset($_GET['id'])) {
                                     <?php if($otazka['typ'] == 'sada1') : ?>
                                         <option value="sada2">1-5</option>
                                     <?php else : ?>
-                                        <option value="sada1">0-5</option>
+                                        <option value="sada1">1-6</option>
                                     <?php endif; ?>
                                 </select>
                                 <input type="hidden" class="moznosti" name="moznost[moznost-<?= $pocet; ?>][]" value="NULL" />
@@ -330,7 +361,7 @@ if(isset($_GET['id'])) {
                                     <?php if($otazka['typ'] == '0-5') : ?>
                                         <option value="1-5">1-5</option>
                                     <?php else : ?>
-                                        <option value="0-5">0-5</option>
+                                        <option value="1-6">1-6</option>
                                     <?php endif; ?>
                                 </select>
                                 <input type="hidden" class="moznosti" name="moznost[moznost-<?= $pocet; ?>][]" value="NULL" />
@@ -358,11 +389,11 @@ if(isset($_GET['id'])) {
                 <?php endif; ?>
             <?php  endforeach; ?>
         </div>
-        <nav class="container bg-danger">
+        <section>
             <br />
             <div class="row">
-                <div class="col-lg-6 text-center">
-                    <select class="form-control" name="uestionType">
+                <div class="col-lg-6">
+                    <select class="form-control" name="uestionType" style="margin: auto; width: 80%">
                         <option value="tvorena">Tvořená odpověď</option>
                         <option value="vyber">Výběr odpovědi</option>
                         <option value="skala">Škála</option>
@@ -374,11 +405,16 @@ if(isset($_GET['id'])) {
                 </div>
             </div>
             <br />
-        </nav><br />
+        </section><br />
         <input type="submit" id="save" value="Uložit dotazník" class="btn btn-danger btn-lg" />
-    </main>
+    </section>
 
 </form>
+</main>
+<footer class="container">
+    <p>&copy; Petr Hanzal 2018</p>
+</footer>
+
 <template id="short">
     <div id="" class="s1 bg-light jumbotron">
         <div class="row">
@@ -477,7 +513,7 @@ if(isset($_GET['id'])) {
             </div>
             <div class="col-lg-10 col-md-12">
                 <select name="typ[]" class="form-control text-center">
-                    <option value="0-5">0 - 5</option>
+                    <option value="1-6">1 - 6</option>
                     <option value="1-5">1 - 5</option>
                 </select>
                 <input type="hidden" class="moznosti" name="moznost[][]" value="NULL" />
@@ -529,7 +565,7 @@ if(isset($_GET['id'])) {
             </div>
             <div class="col-lg-10 col-md-12">
                 <select name="typ[]" class="form-control text-center">
-                    <option value="sada1">0 - 5</option>
+                    <option value="sada1">1 - 6</option>
                     <option value="sada2">1 - 5</option>
                 </select>
                 <input type="hidden" class="moznosti" name="moznost[][]" value="NULL" />
