@@ -60,15 +60,23 @@ class QuestionSelectNumber extends QuestionSelect
         $hb->closeElement("tr");
         //druhý řádek
         $hb->openElement("tr");
+        $i=1;
         foreach ($this->oppnions as $k => $v) {
             $name = $this->name;
             $args = array("type" => $type, "name" => $name, "value" => $v, "id" => $k);
             if (count($this->posted) == 1 && ($this->posted == $v)) {
                 $args["checked"] = "checked";
             }
-            $hb->openElement("td", array('align' => 'center'));
+            $align = 'center';
+            if($i==1) {
+                $align = 'right';
+            }
+            if($i == count($this->oppnions)-1)
+                $align = 'left';
+            $hb->openElement("td", array('align' => $align));
             $hb->addElemnet("input", $args);
             $hb->closeElement();
+            $i +=1;
         }
 
         $hb->closeElement("tr");
@@ -76,7 +84,18 @@ class QuestionSelectNumber extends QuestionSelect
         $hb->openElement("tr");
         for ($i = $this->minValue; $i <= $this->maxValue; $i++)
         {
-            $hb->openElement("td", array('align' => 'center'));
+            $args = array();
+            $align = 'center';
+            if($i==1) {
+                $align = 'right';
+                $args['style'] = 'padding-right: 1.2rem';
+            }
+            if($i == count($this->oppnions)-1) {
+                $align = 'left';
+                $args['style'] = 'padding-left: 1.2rem';
+            }
+            $args['align'] = $align;
+            $hb->openElement("td", $args);
             $hb->addValue($i);
             $hb->closeElement("td");
         }

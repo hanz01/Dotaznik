@@ -32,10 +32,6 @@ class QuestionText extends Question
     public function render()
     {
         $params = array("type" => "text","name" => $this->name,  "placeholder" => self::PLACEHOLDER, "class" => 'form-control');
-        if($this->reqired)
-            $params["required"] = "required";
-        if(!$this->valid)
-            $params["style"] = "background: red";
         if($this->value != null)
             $params["value"] = $this->value;
         $hb = new HtmlBuilder();
@@ -47,7 +43,14 @@ class QuestionText extends Question
     public function validate()
     {
         if($this->reqired) {
-            return $this->value != null;
+
+            if($this->value == "") {
+                $this->setValid(false);
+                $this->setMessage("Vyplň prosím tohle pole.");
+            }
+        }
+        else {
+            return true;
         }
 
     }

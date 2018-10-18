@@ -16,10 +16,7 @@ class QuestionTextLong extends QuestionText
     public function render()
     {
         $params = array("name" => $this->name,  "placeholder" => self::PLACEHOLDER, "class" => 'form-control');
-        if($this->reqired)
-            $params["required"] = "required";
-        if(!$this->valid)
-            $params["style"] = "background: red";
+
         $hb = new HtmlBuilder();
         $hb->openElement("textarea", $params);
         $hb->addValue($this->value);

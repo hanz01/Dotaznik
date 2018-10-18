@@ -21,6 +21,9 @@ header {
 main {
   background: #E5F2FB;
   padding-bottom: 3rem;
+  p {
+    margin-left: 2rem;
+  }
   nav {
     background: #39AFFE;
     border-bottom: 2px solid black;
@@ -118,6 +121,49 @@ li {
   list-style-type: none !important;
 }
 
+/*editor */
+.header-editor {
+  max-width: 950px;
+  margin: 5px auto;
+  border-bottom-width: 0px;
+  h2 {
+    text-align: center;
+  }
+  .zobraz-otazky {
+    margin-top: 1.5rem;
+  }
+}
+.hide {
+  max-width: 950px;
+  margin: auto;
+}
+.pridat-otazku {
+  max-width: 650px;
+  margin: auto;
+  text-align: center;
+  background: #39AFFE;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  h4 {
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+  select {
+    max-width: 350px;
+    display: inline;
+  }
+}
+#db {
+  max-width: 450px;
+  margin: auto;
+  padding: 2rem;
+}
+.data-db {
+  list-style-type: georgian;
+  cursor: pointer;
+}
 
 
 

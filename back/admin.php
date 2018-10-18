@@ -20,7 +20,13 @@ Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
 $data = Db::queryAll('SELECT * FROM ' . $tables['dotaznik'] . ' JOIN ' . $bebras['kategorie'] . ' ON id = kategorie');
 $data1 = Db::queryAll('SELECT * FROM ' . $tables['dotaznik']);
 if(isset($_GET['spustit']) && $_GET['spustit'] > 0) {
-    $q = Db::query('UPDATE ' . $tables['dotaznik'] . ' SET stav = 1 WHERE dotaznik_id = ?', $_GET['spustit']);
+    $kategorie = Db::queryOne('SELECT kategorie FROM ' . $tables['dotaznik']  . ' WHERE dotaznik_id = ?', $_GET['spustit'])['kategorie'];
+    $pocet = Db::query('SELECT * FROM ' . $tables['dotaznik'] . ' WHERE kategorie = ? AND stav = 1', $kategorie);
+    if($pocet == 0)
+        $q = Db::query('UPDATE ' . $tables['dotaznik'] . ' SET stav = 1 WHERE dotaznik_id = ?', $_GET['spustit']);
+    else
+        $_SESSION['zprava'] = 'Ve zvolené kategorii je již jeden aktivní dotazník.';
+        header('location: admin.php');
     if($q) {
         header('location: admin.php');
     }
@@ -29,6 +35,12 @@ if(isset($_GET['spustit']) && $_GET['spustit'] > 0) {
 if(isset($_GET['konec']) && $_GET['konec'] > 0) {
     $q = Db::query('UPDATE ' . $tables['dotaznik'] . ' SET stav = 2 WHERE dotaznik_id = ?', $_GET['konec']);
     if($q) {
+        header('location: admin.php');
+    }
+}
+if(isset($_GET['pozastavit']) && $_GET['pozastavit'] > 0) {
+    $q = Db::query('UPDATE ' . $tables['dotaznik'] . ' SET stav = 3 WHERE dotaznik_id = ?',$_GET['pozastavit']);
+    if ($q) {
         header('location: admin.php');
     }
 }
@@ -119,10 +131,13 @@ if(isset($_GET['delete']) && $_GET['delete'] > 0) {
                         <?php if($d['stav'] == 0)
                             echo 'Rozpracováný <a href="?spustit='.$d['dotaznik_id'].'">spustit <a href="edit.php?id='.$d['dotaznik_id'].'">Upravit</a> <a href="?delete='.$d['dotaznik_id'].'">Smazat</a></a>';
                         elseif($d['stav'] == 1) {
-                            echo 'Probíhající <a href="?konec=' . $d['dotaznik_id'] . '">ukončit</a><br />';
+                            echo 'Aktivní <a href="?konec=' . $d['dotaznik_id'] . '">ukončit</a> <a href="?pozastavit='. $d['dotaznik_id'] . '">Pozastavit</a><br />';
                             echo("Počet respondentů: " . $pocet['count(*)']);
                         }
-
+                        elseif($d['stav'] == 3) {
+                             echo 'Neaktivní <a href="?spustit='. $d['dotaznik_id'] . '">Spustit</a><br />';
+                             echo("Počet respondentů: " . $pocet['count(*)']);
+                        }
                         else {
                             echo 'Ukončený <a target="blank" href="vysledky.php?id=' . $d['dotaznik_id'] . '">výsledky <a href="?delete=' . $d['dotaznik_id'] . '">Smazat</a></a><br />';
                             echo("Počet respondentů: " . $pocet['count(*)']);

@@ -18,7 +18,7 @@ if(empty($_SESSION['user'])) {
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
 if(isset($_GET['id'])) {
     $dotaznik = Db::queryOne('SELECT * FROM ' . $tables['dotaznik'] . ' WHERE dotaznik_id = ?', $_GET['id']);
-    $Questionnaire = new Questionnaire($dotaznik['nazev'], $dotaznik['doplneni'], $dotaznik['kategorie'], $dotaznik['rok'], $dotaznik['dotaznik_id']);
+    $Questionnaire = new Questionnaire($dotaznik['nazev'], $dotaznik['doplneni'], $dotaznik['kategorie'], $dotaznik['rok'], $dotaznik['dotaznik_id'], $dotaznik['podminky']);
 
 }
 
@@ -68,9 +68,30 @@ if(isset($_GET['id'])) {
         </nav>
         <h2 class="text-center">Náhled dotazníku</h2>
         <?= $Questionnaire->renderHeader(); ?>
+        <?php if(!empty($Questionnaire->getPodminky())) : ?>
+        <p>Odesláním dotazníku souhlasím s <a href="#" data-toggle="modal" data-target="#licence">podmínakami výzkumu.</a>
+        <?php endif; ?>
         <form method="post">
-            <?=            $Questionnaire->render();       ?>
+            <?=     $Questionnaire->render();       ?>
         </form>
+        <div class="modal fade" id="licence" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="exampleModalLabel">Podmínky výzkumu</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body text-left">
+                       <p><?= $Questionnaire->getPodminky(); ?></p>
+                    </div>
+                    <div class="modal-footer text-center">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Zavřít</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
     <footer class="container">
         <p>&copy; Petr Hanzal 2018</p>

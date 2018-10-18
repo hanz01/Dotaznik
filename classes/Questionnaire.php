@@ -17,7 +17,9 @@ class Questionnaire
 
     private $questions;
 
-    public function __construct($header, $info, $category, $year, $id)
+    private $podminky;
+
+    public function __construct($header, $info, $category, $year, $id, $podminky = 'NULL')
     {
         $this->header = $header;
         $this->info = $info;
@@ -25,6 +27,7 @@ class Questionnaire
         $this->year = $year;
         $this->posted = isset($_POST['form-name']) && $_POST['form-name'] == $this->header;
         $this->id = $id;
+        $this->podminky = $podminky;
         $this->initQuestions();
 
     }
@@ -41,18 +44,25 @@ class Questionnaire
             return false;
         $i = 1;
         foreach($moznosti as $m) {
+            $povinne = true;
+            if($m['povinne'] == 0)
+                $povinne = false;
+
             switch($m['typ']) {
                 case 'kratka' :
-                    $this->questions[] = new QuestionText($i, $m['otazka'], $m['doplneni'], 'ot-'. $i);
+                    $this->questions[] = new QuestionText($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $povinne);
                     break;
                 case 'dlouha' :
-                    $this->questions[] = new QuestionTextLong($i, $m['otazka'], $m['doplneni'], 'ot-'. $i);
+                    $this->questions[] = new QuestionTextLong($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $povinne);
                     break;
                 case '1':
-                    $this->questions[] = new QuestionSelect($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id'], true);
+                    $this->questions[] = new QuestionSelect($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id'], $povinne);
                     break;
                 case ($m['typ'] == '2' || $m['typ'] == '3' || $m['typ'] == '4') :
-                    $this->questions[] = new QuestionSelect($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id'], true);
+                    $this->questions[] = new QuestionSelect($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $m['typ'], $m['otazky_id'], $povinne);
+                    break;
+                case 'vyber-auto' :
+                    $this->questions[] = new QuestionSelect($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $m['label2'], $m['otazky_id'], $povinne, $this->category);
                     break;
                 case ($m['typ'] == 'sada2' || $m['typ'] == 'sada1') :
                     if($m['typ'] == 'sada1') {
@@ -63,7 +73,7 @@ class Questionnaire
                         $min = 1;
                         $max = 5;
                     }
-                    $this->questions[] = new QuestionSelectNumberSet($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $min, $max, $m['label1'], $m['label2'], $this->category, $m['cancel'], true);
+                    $this->questions[] = new QuestionSelectNumberSet($i, $m['otazka'], $m['doplneni'], 'ot-'. $i, $min, $max, $m['label1'], $m['label2'], $this->category, $m['cancel'], $povinne);
 
                     break;
                 default :
@@ -130,6 +140,9 @@ class Questionnaire
             $name = $this->questions[$k]->getName();
             if($this->questions[$k] instanceof QuestionText) {
                 $this->questions[$k]->setValue($_POST[$name]);
+                if(!$this->questions[$k]->validate()) {
+                    $valid = false;
+                }
             }
             else if($this->questions[$k] instanceof QuestionSelect) {
                 if(isset($_POST[$name])) {
@@ -181,5 +194,8 @@ class Questionnaire
 
     public function getId() {
         return $this->id;
+    }
+    public function getPodminky() {
+        return $this->podminky;
     }
 }

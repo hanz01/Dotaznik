@@ -62,8 +62,8 @@ $kategorie = Db::queryAll('SELECT id, nazev FROM ' . $bebras['kategorie']);
     <div class="jumbotron">
         <h1 class="text-center">Bobřík informatiky - online dotazníky</h1>
 
-            <p>Vítejte v online dotaznících pro podporu inforamtické soutěže Bobřík informatiky.</p>
-            <p>Pokud se chcete zúčastnit dotazníkového šetření, zvolte si prosím jednu z následujích možností.</p>
+            <p>Vítej v online dotaznících pro podporu inforamtické soutěže Bobřík informatiky.</p>
+            <p>Pokud se chceš zúčastnit dotazníkového šetření, vyber si prosím jednu z následujích možností.</p>
             <form method="post" action="dotaznik.php">
                 <input type="hidden" name="render" value="true" />
             <div id="accordion">
@@ -75,7 +75,7 @@ $kategorie = Db::queryAll('SELECT id, nazev FROM ' . $bebras['kategorie']);
                     </div>
                     <div id="collapseOne" class="collapse show" data-parent="#accordion">
                         <div class="card-body text-center">
-                            <h4 class="text-center">Zadejte svůj soutěžní kód</h4><br />
+                            <h4 class="text-center">Zadej svůj soutěžní kód</h4><br />
                             <input type="text" class="form-control text-center" placeholder="Soutěžní kód" name="kod" /><br />
                             <input type="submit" class="btn btn-danger btn-lg" value="Pokračovat" />
                         </div>
@@ -89,7 +89,7 @@ $kategorie = Db::queryAll('SELECT id, nazev FROM ' . $bebras['kategorie']);
                     </div>
                     <div id="collapseTwo" class="collapse" data-parent="#accordion">
                         <div class="card-body text-center">
-                            <h4 class="text-center">Zvolte si prosím svou soutěžní kategorii</h4>
+                            <h4 class="text-center">Vyber si prosím svou soutěžní kategorii</h4>
                             <select name="kategorie" class="form-control text-center">
                                 <option value="" disabled selected>Soutěžní kategorie</option>
                                 <?php foreach ($kategorie as $k) : ?>

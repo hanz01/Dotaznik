@@ -37,9 +37,10 @@ if(isset($_GET['id'])) {
                 'nazev' => $_POST['nazev'],
                 'doplneni' => $_POST['informace'],
                 'kategorie' => $_POST['kategorie'],
-                'rok' => $_POST['rok']
+                'rok' => $_POST['rok'],
+                'podminky' => $_POST['podminky']
             );
-            Db::query('UPDATE ' . $tables['dotaznik'] . ' SET nazev = ?, kategorie = ?, doplneni = ?, rok = ? WHERE dotaznik_id = ?', $form['nazev'], $form['kategorie'], $form['doplneni'], $form['rok'], $_GET['id']);
+            Db::query('UPDATE ' . $tables['dotaznik'] . ' SET nazev = ?, kategorie = ?, doplneni = ?, rok = ?, podminky = ? WHERE dotaznik_id = ?', $form['nazev'], $form['kategorie'], $form['doplneni'], $form['rok'], $form['podminky'], $_GET['id']);
             $dotaznik = $dotaznik['dotaznik_id'];
             $pocet = count($_POST['otazka']);
             Db::query('DELETE FROM ' . $tables['otazky'] . ' WHERE dotaznik_id = ?', $dotaznikId);
@@ -57,6 +58,10 @@ if(isset($_GET['id'])) {
                     $cancel = 'NULL';
                 else
                     $cancel = $_POST['cancel'][$i];
+                if (!isset($_POST['povinne'][$i]))
+                    $povinne = 0;
+                else
+                    $povinne = $_POST['povinne'][$i];
                 $otazka = array(
                     'dotaznik_id' => $dotaznik,
                     'otazka' => $otazka,
@@ -64,7 +69,8 @@ if(isset($_GET['id'])) {
                     'typ' => $typ,
                     'label1' => $label1,
                     'label2' => $label2,
-                    'cancel' => $cancel
+                    'cancel' => $cancel,
+                    'povinne' => $povinne
                 );
 
                 Db::insert($tables['otazky'], $otazka);
@@ -150,25 +156,18 @@ if(isset($_GET['id'])) {
     ?>
 </p>
 <form method="post">
-    <header>
+    <header class="header-editor">
         <h2>Úprava dotazníku</h2>
-        <div class="container ">
             <input type="text" name="nazev" value="<?= $dotaznik1['nazev'] ?>" class="form-control" placeholder="Název formuláře" /><br />
             <textarea name="informace" class="form-control" placeholder="Informace pro doplnění" ><?= $dotaznik['doplneni'] ?></textarea><br />
+            <textarea name="podminky" class="form-control" placeholder="Podmínky výzkumu" ><?= $dotaznik['podminky'] ?></textarea><br />
             <?php if(count($kategorie) > 0) : ?>
-                <div class="row">
-                    <div class="col-lg-2 md-6">
-                        <span>Kategorie</span>
-                    </div>
-                    <div class="col-lg-10 md-6">
-                        <select name="kategorie" class="form-control">
-                            <option value="<?= $dotaznik['kategorie'] ?>"><?= $dotaznik['nazev'] ?></option>
-                            <?php foreach ($kategorie as $k) : ?>
+                <select name="kategorie" class="form-control">
+                    <option value="<?= $dotaznik['kategorie'] ?>"><?= $dotaznik['nazev'] ?></option>
+                    <?php foreach ($kategorie as $k) : ?>
                                 <option value="<?= $k['id'] ?>"><?= $k['nazev'] ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                </div>
+                    <?php endforeach; ?>
+                </select>
             <br />
             <?php endif; ?>
             <select name="rok" class="form-control">
@@ -176,12 +175,10 @@ if(isset($_GET['id'])) {
                 <option vlaue="<?= $dotaznik['rok'] - 1 ?>"><?= $dotaznik['rok'] - 1 ?></option>
                 <option vlaue="<?= $dotaznik['rok'] + 1 ?>"><?= $dotaznik['rok'] + 1 ?></option>
             </select>
-
-        </div>
         <h2>Otázky</h2>
     </header>
     <div class="clearfix"></div>
-    <section>
+    <section class="hide">
         <br />
         <div class="container sortable" id="dotaznik">
             <?php $pocet = 0; ?>
@@ -196,6 +193,8 @@ if(isset($_GET['id'])) {
                             <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
                         </div>
                     </div>
+                    <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+
                     <input type="text" name="otazka[]" class="form-control" placeholder="Zadejte text otázky" value="<?= $otazka['otazka'] ?>" />
                     <br />
                     <input type="text" value="<?= $otazka['doplneni'] ?>"  name="poznamka[]"  onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
@@ -212,6 +211,7 @@ if(isset($_GET['id'])) {
                                     <option value="kratka">Krátká odpověď</option>
                                 <?php endif; ?>
                             </select>
+
                             <input type="hidden" class="moznosti" name="moznost[moznost-<?= $pocet; ?>][]" value="NULL" />
                             <input type="hidden" name="lable1[]" value="NULL" />
                             <input type="hidden" name="lable2[]" value="NULL" />
@@ -219,7 +219,13 @@ if(isset($_GET['id'])) {
                             <input type="hidden" name="id[]" value="<?= $otazka['otazky_id'] ?>" />
 
                         </div>
+
                     </div>
+                    <?php if($otazka['povinne'] == '1') : ?>
+                        Povinná odpověď: <input type="checkbox" name="povinne[]" checked="checked" value="1" />
+                    <?php else :  ?>
+                        Povinná odpověď: <input type="checkbox" name="povinne[]" value="1" />
+                    <?php endif; ?>
                 </div>
                 <?php elseif($otazka['typ'] == '1' || $otazka['typ'] == '2' || $otazka['typ'] == '3' || $otazka['typ'] == '4') : ?>
                     <div id="" class="s1 bg-light jumbotron">
@@ -231,14 +237,16 @@ if(isset($_GET['id'])) {
                                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
                             </div>
                         </div>
+                        <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+
                         <input type="text" name="otazka[]" class="form-control" value="<?= $otazka['otazka'] ?>" placeholder="Zadejte text otázky"  />
                         <br />
                         <input type="text" name="poznamka[]" value="<?= $otazka['doplneni'] ?>" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
                         <div class="row">
-                            <div class="col-lg-2 col-md-12 col-form-label">
+                            <div class="col-lg-4 col-md-12 col-form-label">
                                 <label>Maximální počet odpovědí</label>
                             </div>
-                            <div class="col-lg-10 col-md-12">
+                            <div class="col-lg-8 col-md-12">
                                 <select name="typ[]" class="form-control text-center">
                                     <option value="<?= $otazka['typ'] ?>"><?= $otazka['typ'] ?></option>
                                     <?php for($i=1; $i<=4; $i++) : ?>
@@ -254,41 +262,82 @@ if(isset($_GET['id'])) {
                             <?php foreach ($moznosti as $moznost) : ?>
                             <div class="row">
                                 <?php if(count($moznosti) > 0) : ?>
-                                <div class="col-lg-11">
+                                <div class="col-lg-10">
                                     <input type="text" value="<?= $moznost['moznost'] ?>" class="form-control moznosti" placeholder="Odpověď" name="moznost[moznost-<?= $pocet; ?>][]" />
                                 </div>
-                                <div class="col-lg-1">
+                                <div class="col-lg-2">
                                     <i class="fa fa-close col-lg-1 text-center deleteMoznost" data="moznost[moznost-<?= $pocet; ?>][]" onclick="$(this).parent().parent().remove()"></i>
                                     <i class="fa fa-plus-square add" style="font-size:25px;" data="moznost[moznost-<?= $pocet; ?>][]" onclick="$(this).parent().parent().after(addMoznost($(this)))"></i>
-                                </div>
+                                </div><br />
                                     <?php else : ?>
-                                        <div class="col-lg-11">
+                                        <div class="col-lg-10">
                                             <input type="text" class="form-control moznosti" placeholder="Odpověď" data="moznost[moznost-<?= $pocet; ?>][]" " />
                                         </div>
-                                        <div class="col-lg-1">
+                                        <div class="col-lg-2">
                                             <i class="fa fa-close col-lg-1 text-center deleteMoznost" data="moznost[moznost-<?= $pocet; ?>][]" onclick="if(abbleToDelete($(this, 5)) )$(this).parent().parent().remove()"></i>
                                             <i class="fa fa-plus-square add" style="font-size:25px;" data="moznost[moznost-<?= $pocet; ?>][]" onclick="$(this).parent().parent().after(addMoznost($(this)))"></i>
-                                        </div>
-
-
+                                        </div><br />
                                 <?php endif; ?>
+                                <br />
 
                             </div>
                             <?php endforeach; ?>
                             <div clas="row">
-                            <div class="col-lg-11">
+                            <div class="col-lg-10">
                             </div>
-                            <div class="col-lg-1">
-                                <i class="fa fa-close col-lg-1 text-center deleteMoznost" data="moznost[moznost-<?= $pocet; ?>][]" onclick="if(abbleToDelete($(this, 5)) )$(this).parent().parent().remove()"></i>
+                            <div class="col-lg-2">
                                 <i class="fa fa-plus-square add" style="font-size:25px;" data="moznost[moznost-<?= $pocet; ?>][]" onclick="$(this).parent().parent().after(addMoznost($(this)))"></i>
                             </div>
                             </div>
-                        <input type="hidden" name="lable1[]" value="NULL" />
+                          <input type="hidden" name="lable1[]" value="NULL" />
                         <input type="hidden" name="lable2[]" value="NULL" />
                         <input type="hidden" name="cancel[]" value="NULL" />
                         <input type="hidden" name="id[]" value="<?= $otazka['otazky_id'] ?>" />
+                        <input type="hidden" name="povinne[]" value="1" />
+
 
                     </div>
+                <?php elseif($otazka['typ'] == 'vyber-auto') : ?>
+                    <div id="" class="s1 bg-light jumbotron">
+                        <div class="row">
+                            <div class="col-lg-10 col-md-10 col-sm-12">
+                                <h3>Výběr odpovědi ze soutěžních otázek</h3>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-12 text-right">
+                                <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
+                            </div>
+                        </div>
+                        <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+                        <p>Do odpovědí se automaticky načtou názvy soutěžních otázek z dané kategorie.</p>
+
+                        <input type="text" name="otazka[]" class="form-control" value="<?= $otazka['otazka'] ?>" placeholder="Zadejte text otázky"  />
+                        <br />
+                        <input type="text" name="poznamka[]" value="<?= $otazka['doplneni'] ?>" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
+                        <div class="row">
+                            <div class="col-lg-4 col-md-12 col-form-label">
+                                <label>Maximální počet odpovědí</label>
+                            </div>
+                            <div class="col-lg-8 col-md-12">
+                                <select name="lable2[]" class="form-control text-center">
+                                    <option value="<?= $otazka['label2'] ?>"><?= $otazka['label2'] ?></option>
+                                    <?php for($i=1; $i<=4; $i++) : ?>
+                                        <?php if($i!=$otazka['label2']) : ?>
+                                            <option value="<?= $i ?>"><?= $i ?></option>
+                                        <?php endif; ?>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="lable1[]" value="NULL" />
+                        <input type="hidden" name="typ[]" value="vyber-auto" />
+                        <input type="hidden" name="cancel[]" value="NULL" />
+                        <input type="hidden" name="id[]" value="<?= $otazka['otazky_id'] ?>" />
+                        <input type="hidden" name="povinne[]" value="1" />
+
+
+                    </div>
+
                 <?php elseif($otazka['typ'] == 'sada1' || $otazka['typ'] == 'sada2') : ?>
                     <div id="" class="s1 bg-light jumbotron">
                         <div class="row">
@@ -299,6 +348,8 @@ if(isset($_GET['id'])) {
                                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
                             </div>
                         </div>
+                        <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+
                         <input type="text" name="otazka[]" value="<?= $otazka['otazka'] ?>" class="form-control" placeholder="Zadejte text otázky" />
                         <br />
                         <input type="text" name="poznamka[]" value="<?= $otazka['doplneni'] ?>" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
@@ -310,8 +361,9 @@ if(isset($_GET['id'])) {
                             <div class="col-lg-6 col-md-6 col-sm-12">
                                 <input type="text" name="lable2[]" class="form-control" value="<?= $otazka['label2'] ?>" placeholder="Štítek pro poslední číslo"/>
                             </div>
-                        </div>
+                        </div><br />
                         <div class="row">
+
                             <div class="col-lg-2 col-md-12 col-form-label">
                                 <label>Rozsah</label>
                             </div>
@@ -328,13 +380,15 @@ if(isset($_GET['id'])) {
 
                             </div>
                         </div>
-                        Vzít odpověď zpět:
+                        Přidat možnost nechci odpovídat:
                         <?php if($otazka['cancel'] != 'NULL') : ?>
                             <input type="checkbox" name="cancel[]" checked="checked" value="Nechci odpovídat" />
                         <?php else :  ?>
                             <input type="checkbox" name="cancel[]" value="Nechci odpovídat" />
                         <?php endif; ?>
                         <input type="hidden" name="id[]" value="<?= $otazka['otazky_id'] ?>" />
+                        <input type="hidden" name="povinne[]" checked="checked" value="1" />
+
 
                     </div>
 
@@ -348,6 +402,8 @@ if(isset($_GET['id'])) {
                                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
                             </div>
                         </div>
+                        <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+
                         <input type="text" name="otazka[]" value="<?= $otazka['otazka'] ?>" class="form-control" placeholder="Zadejte text otázky" />
                         <br />
                         <input type="text" name="poznamka[]" value="<?= $otazka['doplneni'] ?>" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
@@ -383,30 +439,28 @@ if(isset($_GET['id'])) {
                             <input type="checkbox" name="cancel[]" value="Nechci odpovídat" />
                         <?php endif; ?>
                         <input type="hidden" name="id[]" value="<?= $otazka['otazky_id'] ?>" />
+                        <input type="hidden" name="povinne[]" checked="checked" value="1" />
+
 
                     </div>
 
                 <?php endif; ?>
             <?php  endforeach; ?>
         </div>
-        <section>
-            <br />
-            <div class="row">
-                <div class="col-lg-6">
-                    <select class="form-control" name="uestionType" style="margin: auto; width: 80%">
-                        <option value="tvorena">Tvořená odpověď</option>
-                        <option value="vyber">Výběr odpovědi</option>
-                        <option value="skala">Škála</option>
-                        <option value="sada">Škála sada</option>
-                    </select>
-                </div>
-                <div class="col-lg-6">
-                    <input id="add" type="button" class="btn btn-large btn-primary" value="Přidat otázku" />
-                </div>
-            </div>
-            <br />
-        </section><br />
-        <input type="submit" id="save" value="Uložit dotazník" class="btn btn-danger btn-lg" />
+        <div class="pridat-otazku">
+                <h4 class="text-center">Přidat otázku</h4>
+                <select class="form-control" name="uestionType" style="margin: auto; width: 80%">
+                    <option value="tvorena">Tvořená odpověď</option>
+                    <option value="vyber">Výběr odpovědi</option>
+                    <option value="vyber-auto">Výběr odpovědi ze soutěžních otázek</option>
+                    <option value="skala">Škála</option>
+                    <option value="sada">Škála sada</option>
+                </select>
+                <input id="add" type="button" class="btn btn-large btn-primary" value="Přidat otázku" />
+        </div>
+        <div class="container text-center">
+            <input type="submit" id="save" value="Uložit dotazník" class="btn btn-danger btn-lg" />
+        </div>
     </section>
 
 </form>
@@ -425,6 +479,8 @@ if(isset($_GET['id'])) {
                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
             </div>
         </div>
+        <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+
         <input type="text" name="otazka[]" class="form-control" placeholder="Zadejte text otázky" />
         <br />
         <input type="text" name="poznamka[]"  onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
@@ -437,6 +493,8 @@ if(isset($_GET['id'])) {
                     <option value="kratka">Krátká odpověď</option>
                     <option value="dlouha">Dlouhá odpověď</option>
                 </select>
+                Povinná odpověď: <input type="checkbox" name="povinne[]" checked="checked" value="1" />
+
                 <input type="hidden" class="moznosti" name="moznost[][]" value="NULL" />
                 <input type="hidden" name="lable1[]" value="NULL" />
                 <input type="hidden" name="lable2[]" value="NULL" />
@@ -460,14 +518,16 @@ if(isset($_GET['id'])) {
                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
             </div>
         </div>
+        <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+
         <input type="text" name="otazka[]" class="form-control" placeholder="Zadejte text otázky"  />
         <br />
         <input type="text" name="poznamka[]" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
         <div class="row">
-            <div class="col-lg-2 col-md-12 col-form-label">
+            <div class="col-lg-4 col-md-12 col-form-label">
                 <label>Maximální počet odpovědí</label>
             </div>
-            <div class="col-lg-10 col-md-12">
+            <div class="col-lg-8 col-md-12">
                 <select name="typ[]" class="form-control text-center">
                     <option value="1">1</option>
                     <option value="2">2</option>
@@ -478,21 +538,24 @@ if(isset($_GET['id'])) {
         </div>
         <h4>Odpovědi</h4>
         <div class="row">
-            <div class="col-lg-11">
+            <div class="col-lg-10">
                 <input type="text" class="form-control moznosti" placeholder="Odpověď" name="moznost[][]" />
             </div>
-            <div class="col-lg-1">
+            <div class="col-lg-2">
                 <i class="fa fa-close col-lg-1 text-center deleteMoznost" onclick="if(abbleToDelete($(this)) )$(this).parent().parent().remove()"></i>
                 <i class="fa fa-plus-square add" style="font-size:25px;" onclick="$(this).parent().parent().after(addMoznost($(this)))"></i>
             </div>
-        </div>
+        </div><br />
         <input type="hidden" name="lable1[]" value="NULL" />
         <input type="hidden" name="lable2[]" value="NULL" />
         <input type="hidden" name="cancel[]" value="NULL" />
         <input type="hidden" name="id[]" value="NULL" />
+        <input type="hidden" name="povinne[]" checked="checked" value="1" />
     </div>
 
 </template>
+
+
 
 <template id="skala">
     <div id="" class="s1 bg-light jumbotron">
@@ -504,6 +567,8 @@ if(isset($_GET['id'])) {
                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
             </div>
         </div>
+        <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+
         <input type="text" name="otazka[]" class="form-control" placeholder="Zadejte text otázky" />
         <br />
         <input type="text" name="poznamka[]" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
@@ -528,9 +593,11 @@ if(isset($_GET['id'])) {
                 <input type="text" name="lable2[]" class="form-control" placeholder="Štítek pro poslední číslo"/>
             </div>
         </div>
-        Vzít odpověď zpět:
+        Přidat možnost nechci odpovídat
         <input type="checkbox" name="cancel[]" value="Nechci odpovídat" />
         <input type="hidden" name="id[]" value="NULL" />
+        <input type="hidden" name="povinne[]" checked="checked" value="1" />
+
 
     </div>
 
@@ -547,6 +614,8 @@ if(isset($_GET['id'])) {
                 <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
             </div>
         </div>
+        <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+
         <input type="text" name="otazka[]" class="form-control" placeholder="Zadejte text otázky" />
         <br />
         <input type="text" name="poznamka[]" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
@@ -558,7 +627,7 @@ if(isset($_GET['id'])) {
             <div class="col-lg-6 col-md-6 col-sm-12">
                 <input type="text" name="lable2[]" class="form-control" placeholder="Štítek pro poslední číslo"/>
             </div>
-        </div>
+        </div><br />
         <div class="row">
             <div class="col-lg-2 col-md-12 col-form-label">
                 <label>Rozsah</label>
@@ -572,15 +641,57 @@ if(isset($_GET['id'])) {
 
             </div>
         </div>
-        Vzít odpověď zpět:
+        Přidat možnost nechci odpovídat
         <input type="checkbox" name="cancel[]" value="Nechci odpovídat" />
         <input type="hidden" name="id[]" value="NULL" />
+        <input type="hidden" name="povinne[]" checked="checked" value="1" />
+
 
     </div>
 
     </div>
 </template>
 
+<template id="vyber-auto">
+    <div id="" class="s1 bg-light jumbotron">
+        <div class="row">
+            <div class="col-lg-10 col-md-10 col-sm-12">
+                <h3>Otázka s možností výběru</h3>
+            </div>
+            <div class="col-lg-2 col-md-2 col-sm-12 text-right">
+                <i class="delete fa fa-close" onclick="$(this).parent().parent().parent().remove(); pocet--"></i>
+            </div>
+        </div>
+        <p>Tip: pokud chcete vložit data z databáze soutěžních úloh, klikněte dvakrát do jakéhokoliv textového pole.</p>
+
+        <p>Do odpovědí se automaticky načtou názvy soutěžních otázek z dané kategorie.</p>
+        <input type="text" name="otazka[]" class="form-control" placeholder="Zadejte text otázky"  />
+        <br />
+        <input type="text" name="poznamka[]" onblur="if($(this).val() == '') $(this).val(' ')" class="form-control" placeholder="Zadejte doplňující text" /><br />
+        <div class="row">
+            <div class="col-lg-4 col-md-12 col-form-label">
+                <label>Maximální počet odpovědí</label>
+            </div>
+            <div class="col-lg-8 col-md-12">
+                <select name="lable2[]" class="form-control text-center">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+        </div>
+
+        <input type="hidden" name="lable1[]" value="NULL" />
+        <input type="hidden" name="typ[]" value="vyber-auto" />
+        <input type="hidden" name="cancel[]" value="NULL" />
+        <input type="hidden" name="id[]" value="NULL" />
+        <input type="hidden" name="povinne[]" checked="checked" value="1" />
+        <input type="hidden" class="moznosti" name="moznost[][]" value="NULL" />
+
+    </div>
+
+</template>
 
 <!-- The Modal -->
 <div class="modal fade" id="db">

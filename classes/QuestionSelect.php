@@ -16,11 +16,14 @@ class QuestionSelect extends  Question
 
     protected $message;
 
-    public function __construct($index, $qustion, $note, $name, $max, $id, $rqired = true)
+    private $category;
+
+    public function __construct($index, $qustion, $note, $name, $max, $id, $rqired = true, $category = null)
     {
         parent::__construct($index, $qustion, $note, $name, $rqired);
         $this->max = $max;
         $this->id = $id;
+        $this->category = $category;
         $this->initOppnions();
     }
 
@@ -30,10 +33,17 @@ class QuestionSelect extends  Question
         $this->max = $max;
     }
     private function initOppnions() {
-        $op = Db::queryAll('SELECT * FROM moznosti WHERE otazky_id = ?', $this->id);
+        if($this->category == null) {
+            $op = Db::queryAll('SELECT * FROM moznosti WHERE otazky_id = ?', $this->id);
+            $index = 'moznost';
+        }
+        else {
+            $op = Db::queryAll('SELECT nazev FROM ' . config::otazky . ' WHERE kategorie = ?', $this->category);
+            $index =  'nazev';
+        }
         $i=0;
         foreach($op as $o) {
-            $this->oppnions['op'.$i] = $o['moznost'];
+            $this->oppnions['op'.$i] = $o[$index];
             $i += 1;
         }
     }
@@ -78,7 +88,7 @@ class QuestionSelect extends  Question
                 $args["checked"] = "checked";
             }
             $hb->addElemnet("input", $args);
-            $hb->openElement("label", array("for" => $k));
+            $hb->openElement("label");
             $hb->addValue($v);
             $hb->closeElement();
             $hb->addElemnet("br");
@@ -98,10 +108,13 @@ class QuestionSelect extends  Question
                 return true;
             }
             else {
-                $this->message = "Vyberte maximálně: " . $this->max . ' možnosti';
+                $this->message = "Vyber maximálně: " . $this->max . ' možnosti';
                 $this->setValid(false);
                 return false;
             }
+        }
+        else {
+            return true;
         }
 
 

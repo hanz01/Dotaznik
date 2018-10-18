@@ -22,7 +22,9 @@ $tables = array(
 
 $bebras = array(
     'otazky' => 'soutezni_otazky',
-    'kategorie' => 'kategorie'
+    'kategorie' => 'kategorie',
+    'soutezici' => ' ibobr_2015_soutezici'
+
 );
 
 $typy = array(
@@ -32,6 +34,15 @@ $typy = array(
       'sada2' => '1-5'
 );
 
+$user = array(
+  'login' => 'admin',
+  'pass' => 'admin'
+);
+
+class config
+{
+    const otazky = 'soutezni_otazky';
+}
 
 
 

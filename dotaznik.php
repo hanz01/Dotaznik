@@ -14,7 +14,10 @@ include("classes/QuestionSelectNumberSet.php");
 
 Db::connect($db['host'], $db['db'], $db['user'], $db['pass']);
 if($_POST) {
-    if(isset($_POST['kategorie'])) {
+
+
+    if(isset($_POST['kategorie']) && !empty($_POST['kategorie'])) {
+
         $kategorie = $_POST['kategorie'];
         $dotazniky = Db::queryAll('SELECT * FROM ' . $tables['dotaznik'] . ' WHERE kategorie = ? AND stav = 1', $kategorie);
         $pocet = count($dotazniky);
@@ -30,9 +33,32 @@ if($_POST) {
             $respondent = 'anonym-' .  $akt;
         }
     }
-    else if(isset($_POST['kod'])) {
+    else if(isset($_POST['kod']) && empty($_POST['kategorie'])) {
+
         $kod = $_POST['kod'];
-        echo $kod;
+        $kod2 = $kod;
+        $kategorieQuery = Db::queryOne('SELECT kategorie FROM ' . $bebras['soutezici'] . ' WHERE kod = ?', $kod)['kategorie'];
+        if(!empty($kategorieQuery)) {
+            $dotazniky = Db::queryAll('SELECT * FROM ' . $tables['dotaznik'] . ' WHERE kategorie = ? AND stav = 1', $kategorieQuery);
+            $pocet = count($dotazniky);
+
+            if($pocet == 0) {
+                $_SESSION['zprava'] = 'Pro zvolenou kategorii nebyl nalezen žádný dotazník.';
+                header('location: index.php');
+                exit();
+            }
+            else if($pocet == 1) {
+                $id = $dotazniky[0]['dotaznik_id'];
+                $kategorie = $kategorieQuery;
+                $respondent = $kod;
+            }
+        }
+        else {
+            $_SESSION['zprava'] = 'Neplatný soutěžní kód';
+            header('location: index.php');
+            exit;
+        }
+
     }
 }
 if(isset($id) && isset($respondent)) {
@@ -53,7 +79,7 @@ if(isset($id) && isset($respondent)) {
             foreach ($Questionnaire->getData() as $k => $item) {
                 $data = array(
                     'dotaznik_id' => $Questionnaire->getId(),
-                    'respondent' => $_POST['respondent'],
+                    'respondent' => $respondent,
                     'otazka' => $k,
                     'odpoved' => $item
                 );
@@ -95,9 +121,11 @@ else {
     </header>
     <main class="container">
         <?= $Questionnaire->renderHeader(); ?>
+
         <form method="post">
             <input type="hidden" name="kategorie" value="<?php if(isset($_POST['kategorie'])) echo $_POST['kategorie']; ?>" />
             <input type="hidden" name="kod" value="<?php if(isset($_POST['kod'])) echo $_POST['kod']; ?>" />
+            <input type="hidden" name="kod2" value="<?php if(isset($kod2)) echo $kod2; ?>" />
             <input type="hidden" name="respondent" value="<?= $respondent ?>" />
             <?=            $Questionnaire->render();       ?>
         </form>
@@ -105,5 +133,24 @@ else {
     <footer class="container">
         <p>&copy; Petr Hanzal 2018</p>
     </footer>
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
     </body>
     </html>

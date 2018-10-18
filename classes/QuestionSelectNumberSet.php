@@ -23,7 +23,7 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
     }
 
     private function initQuetions() {
-        $q = Db::queryAll("SELECT nazev FROM soutezni_otazky WHERE kategorie = ?", $this->category);
+        $q = Db::queryAll("SELECT nazev FROM ". config::otazky  .  " WHERE kategorie = ?", $this->category);
         foreach ($q as $item) {
             $this->questions[] = $item['nazev'];
         }
@@ -37,7 +37,7 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
     public function render()
     {
         $hb = new HtmlBuilder();
-            $hb->openElement("table", array('style' => ' max-width: 755px; margin-left: 1rem'));
+            $hb->openElement("table", array('border' => '0', 'style' => ' max-width: 755px; margin-left: 1rem'));
             //první řádek
             $hb->openElement('tr');
                 $hb->openElement('td');
@@ -104,7 +104,7 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
                 }
                 if(!$this->valid && $this->posted[$radek] == '-1') {
                     $hb->openElement('td');
-                    $hb->openElement('i', array('class' => 'fa fa-times', 'aria-hidden' => 'true', 'style' => 'color: red', 'title' => 'Vyberte nějakou možnost z toho řádku'));
+                    $hb->openElement('i', array('class' => 'fa fa-times', 'aria-hidden' => 'true', 'style' => 'color: red', 'title' => 'Vyber nějakou možnost z tohoto řádku'));
                     $hb->closeElement('td');
                 }
             $hb->closeElement("tr");
@@ -116,14 +116,18 @@ class QuestionSelectNumberSet extends QuestionSelectNumber
 
     public function validate()
     {
-        if(!in_array('-1', $this->posted) && count($this->posted ) == count($this->questions)) {
-            return true;
+        if($this->reqired) {
+            if (!in_array('-1', $this->posted) && count($this->posted) == count($this->questions)) {
+                return true;
+            } else {
+                $this->message = 'Vyber prosím v každém řádku jednu možnost';
+                $this->setValid(false);
+
+                return false;
+            }
         }
         else {
-            $this->message = 'Vyberte prosím v každém řádku jednu možnost';
-            $this->setValid(false);
-
-            return false;
+            return true;
         }
     }
 
